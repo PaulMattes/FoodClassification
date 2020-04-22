@@ -1,0 +1,34 @@
+
+
+<div #div1>
+  <input type="file" id="input" multiple (change)="handleFiles($event)">
+  <input type="file" #csvReader name="Upload CSV" id="txtFileUpload" (change)="uploadListenerCSV($event)" accept=".csv" />
+
+  <p>{{name}}</p>
+  <p>{{indexText}}</p>
+  <p>{{initText}}</p>
+
+
+  <div *ngFor="let b of boundingBoxes">
+      <label>essen Name:
+          <input [(ngModel)]=b.x1 placeholder="x1"/>
+          <input [(ngModel)]=b.x2 placeholder="x2"/>
+          <input [(ngModel)]=b.y1 placeholder="y1"/>
+          <input [(ngModel)]=b.y2 placeholder="y2"/>
+          <input [(ngModel)]=b.bildName placeholder="bildName"/>
+          <input [(ngModel)]=b.essen placeholder="essen"/>
+          <button type="button" class="btn" (click)="delete(b)">Delete</button>
+      </label>
+  </div>
+
+  <button type="button" class="btn" (click)="nextImage()">Next</button>
+  <button type="button" class="btn" (click)="previousImage()">Previous</button>
+  <button type="button" class="btn" (click)="toStart()">to the Start</button>
+  <button type="button" class="btn" (click)="save()">Save</button>
+</div>
+  
+
+<div style="position: relative;">    
+  <canvas #layer1 id="layer1" 
+   style="position: absolute; left: 0; top: 0; z-index: 0;"></canvas>
+</div>

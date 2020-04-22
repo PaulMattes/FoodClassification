@@ -1,0 +1,278 @@
+20041a4c-8a3a-431d-b64b-d40747effedf.jpg,75,490,1015,1061,banana
+227af5fe-fc47-4dfe-b4d7-f22691db58c3.jpg,391,498,678,857,boiled egg
+31518265-d834-4da3-8c98-1ed0cee5a176.jpg,335,493,807,1164,banana
+33d1895f-f150-4f80-a45d-c9a86729d033.jpg,528,613,981,1064,roasted turkey steak
+33d1895f-f150-4f80-a45d-c9a86729d033.jpg,113,345,638,841,Gefüllter Paprika mit Couscous
+47bcd432-4e75-4fff-9f6c-180ca37b339f.jpg,62,270,995,1222,raspberry (group)
+62246ca9-79e0-48b9-a6d1-c8e90651a2b9.jpg,283,427,782,896,dampfnudel
+6a7b96d0-b4df-479e-9cdb-463ee8bfa09a.jpg,360,357,975,870,roast potatoes
+6a7b96d0-b4df-479e-9cdb-463ee8bfa09a.jpg,94,591,611,1194,mixed vegetables
+6a7b96d0-b4df-479e-9cdb-463ee8bfa09a.jpg,580,893,982,1187,Putensteak, gebacken
+6e6ab446-e7c8-419d-8236-836965262fc5.jpg,85,152,993,1304,Reis mit Hähnchen und Bohnen
+7029f73e-85e0-4bf3-a878-62e3cc2a3ad8.jpg,96,270,846,756,roasted turkey steak
+7029f73e-85e0-4bf3-a878-62e3cc2a3ad8.jpg,136,680,955,1137,roasted turkey steak
+7e2e7fbe-c3f6-4c9c-a624-ab6ee32146be.jpg,298,359,852,916,apple
+aa85fb69-ff3e-41cf-9a19-e26b93f541b2.jpg,333,305,781,1158,banana
+ab710d5e-7fbb-4960-9d22-e859567c5674.jpg,240,237,709,1091,banana
+baa521f7-f34c-42f0-8c26-06d05c9221b6.jpg,334,299,773,782,apple
+cdad5a50-d50b-43a6-bed7-24271b3856b4.jpg,261,402,775,961,apple
+d293668a-e9e7-4851-815f-831c5b31d666.jpg,547,768,1026,1298,cordon bleu
+d293668a-e9e7-4851-815f-831c5b31d666.jpg,38,458,630,1168,bulgur with vegetables
+d56d417d-dd96-4262-b759-55b3f87cf9b2.jpg,65,437,1014,1022,banana
+dfd25d07-05f1-4bc9-ab1e-4d83d473e480.jpg,175,300,959,1045,lasagna
+e93da2b8-894e-46d2-a59f-37ede0bf8d6c.jpg,315,452,747,883,apple
+f47d7063-0c9d-4361-82cb-1bdc9782f0a7.jpg,187,318,808,939,Rote Bete-Risotto
+f47d7063-0c9d-4361-82cb-1bdc9782f0a7.jpg,309,918,889,1403,falafel (group)
+3386f290-ecaa-43bc-8ced-8227f98bb5bc.jpg,367,316,761,675,Semmelknödel
+3386f290-ecaa-43bc-8ced-8227f98bb5bc.jpg,561,560,1009,955,Rinderrouladen, gefüllt
+3386f290-ecaa-43bc-8ced-8227f98bb5bc.jpg,47,553,538,1103,mixed vegetables
+374dc91f-a1e4-4c7f-a063-c2cf3b5d093a.jpg,211,394,740,934,apple
+3c7c092b-adbb-40ba-95f8-942033d156e3.jpg,24,235,1046,1234,pizza
+5b4e828c-d8f1-4d03-bed3-a664fefc8b45.jpg,11,621,1013,917,yufka
+be74f197-fad3-48fc-a2af-deb2cbb451cc.jpg,294,513,744,947,apple
+dac27a17-515f-4e78-80d2-f25f59197e6e.jpg,513,276,1025,759,roll
+dac27a17-515f-4e78-80d2-f25f59197e6e.jpg,18,575,594,1094,roll with butter and cold cut
+c2ab6ffc-56b5-4da8-adf8-fad3b1f09a84.jpg,113,305,870,1156,pear
+032debce-6ded-4e6e-9c71-2c91c7a48649.jpg,189,305,935,906,Baguette mit Camembert
+0752aa1a-b8a5-4aa6-859f-cc5fa39c060d.jpg,177,379,883,1041,Brot mit Camembert
+10fc824f-f528-427e-b5d3-69a62e6e1da1.jpg,505,439,1034,982,couscous
+10fc824f-f528-427e-b5d3-69a62e6e1da1.jpg,72,447,614,1108,Schnitzel überbacken, Kochschinken, Pilze
+2ef0dd2f-6e3c-496f-8ee5-44acd99c0ff1.jpg,325,383,829,855,apple
+372f0285-07bd-4f30-92c6-d5708b59ebee.jpg,71,236,955,1102,sweet potato chickpea curry
+3b19a7e9-42cb-4f08-ac64-d8ec080eb481.jpg,65,257,994,1120,oatmeal with protein powder
+3b806889-f3f4-4563-8485-9a21266cb85e.jpg,102,265,940,1125,Linsenbolognese
+473f1484-4178-4424-a9fd-64e832f24c2a.jpg,148,358,878,1130,roll
+4d58bef5-8e83-441e-94d1-f2738ad5aac6.jpg,489,315,1045,1147,rice cooked
+4d58bef5-8e83-441e-94d1-f2738ad5aac6.jpg,42,280,572,1134,chicken wok
+506972bc-32da-4fba-9ca1-e0ba67cba187.jpg,320,140,908,749,
+506972bc-32da-4fba-9ca1-e0ba67cba187.jpg,145,728,916,1186,
+587b75c3-4aa2-441f-a337-4998c1d77c2d.jpg,39,238,1031,1152,pasta bolognese bake
+7abf96ae-ca70-41d5-a64e-d11a6ba015e4.jpg,363,353,1011,1187,pasta cooked
+7abf96ae-ca70-41d5-a64e-d11a6ba015e4.jpg,31,360,507,1109,Schnitzelauflauf
+7d5a653e-d733-4da2-b3a2-c63810d415e1.jpg,62,307,1005,1226,pasta bolognese bake
+8d98f807-f3ad-4453-b656-4409613036d2.jpg,313,595,919,1206,mixed vegetables
+8d98f807-f3ad-4453-b656-4409613036d2.jpg,196,113,739,618,
+973fcaec-29ff-461f-a702-06639e758f4a.jpg,62,184,919,1251,mixed salad
+a886a091-57fc-417d-ae7b-8581b5f478dd.jpg,148,384,879,984,Bagutteschreibe
+d2e4bea4-8458-410c-8918-16ac587bcb42.jpg,97,299,990,1177,chicken wok
+d79f0e2e-ab23-4b1a-877d-29345274efec.jpg,144,408,772,1227,ben and jerrys half baked
+dd73e52c-9c2f-4345-98e8-067b2aacd643.jpg,334,353,994,1022,rice pudding with whole milk
+dd73e52c-9c2f-4345-98e8-067b2aacd643.jpg,57,402,383,906,apple puree unsweetened
+f498e275-396f-4799-9b0f-32bb5b71faa1.jpg,172,337,898,1037,Brot mit Camembert
+f4d7ee0d-abc9-4cf2-8c77-12e8c3d2763d.jpg,105,260,907,1081,pasta bolognese bake
+f776c8e1-d8c5-4cd3-a442-a3e9f19cb4d1.jpg,151,295,886,1155,Brot mit Camembert
+17525f46-032f-4ef2-bba3-2d3121f026f6.jpg,87,378,439,804,Rinder-Sauerbraten Oldenländer
+17525f46-032f-4ef2-bba3-2d3121f026f6.jpg,271,215,1009,1072,pasta cooked
+37860773-d3bc-455d-8f92-ea2366addaf1.jpg,144,263,679,865,mixed vegetables
+37860773-d3bc-455d-8f92-ea2366addaf1.jpg,658,379,997,691,
+37860773-d3bc-455d-8f92-ea2366addaf1.jpg,446,638,942,1108,
+4c0bf04d-51af-4b8c-91e8-ee372ce408e1.jpg,190,189,897,1223,
+61477d6a-c7b0-480a-9c45-ff80cca09a3e.jpg,80,321,999,1180,
+d27cbf2b-fce6-4c5e-8eae-e57b2b1d7d8d.jpg,325,330,1043,1170,pasta cooked
+d27cbf2b-fce6-4c5e-8eae-e57b2b1d7d8d.jpg,86,536,448,928,Rinder-Sauerbraten Oldenländer
+d918f9ec-a23d-4463-8a8c-5ba11370d856.jpg,100,239,1004,1104,
+e15b73ab-ecf4-40da-b6e3-061b33f8898d.jpg,83,652,1032,945,
+1de935d4-84ef-427a-bfee-346d8ce890e5.jpg,437,221,927,684,
+1de935d4-84ef-427a-bfee-346d8ce890e5.jpg,517,581,1052,1038,croquette (group)
+1de935d4-84ef-427a-bfee-346d8ce890e5.jpg,62,600,622,1141,roasted turkey steak
+1de935d4-84ef-427a-bfee-346d8ce890e5.jpg,69,189,485,630,
+6873aa7b-9194-48bd-8bbc-01d243380104.jpg,236,489,869,1073,mixed vegetables
+f433ad52-e6dc-488e-93a0-a4854394a10f.jpg,84,292,545,940,rice cooked
+f433ad52-e6dc-488e-93a0-a4854394a10f.jpg,304,380,1012,1221,sweet potato chickpea curry
+ff982398-2aa0-408f-8357-32be4192cb30.jpg,150,309,942,1121,Süßkartoffel-Kichererbsen-Curry, Reis
+1c0905ca-143f-4a9c-b4d4-35f12c854f13.jpg,265,232,856,719,rice cooked
+1c0905ca-143f-4a9c-b4d4-35f12c854f13.jpg,17,503,991,1195,mixed vegetables
+7cc968a1-bb1d-4d30-9d2c-43b9f065f1d6.jpg,390,719,915,1230,spinach
+7cc968a1-bb1d-4d30-9d2c-43b9f065f1d6.jpg,347,270,957,765,mushroom risotto
+7cc968a1-bb1d-4d30-9d2c-43b9f065f1d6.jpg,136,559,386,973,baked salmon
+8f77f20f-ef03-45b2-806e-0aa48b8f505f.jpg,352,258,849,691,spinach
+8f77f20f-ef03-45b2-806e-0aa48b8f505f.jpg,416,608,983,1238,mushroom risotto
+8f77f20f-ef03-45b2-806e-0aa48b8f505f.jpg,75,403,377,1065,baked salmon
+07971b01-1e93-447f-8c02-0da4f5e6ecd7.jpg,139,595,809,1403,risotto
+07971b01-1e93-447f-8c02-0da4f5e6ecd7.jpg,329,82,782,475,Rinderleber
+0a043b49-f3e2-47b0-b18a-752252767c19.jpg,293,460,742,880,apple
+15697e0f-a451-4076-a4d1-fda14d4e3443.jpg,91,315,531,1091,Brot mit Frischkäse
+15697e0f-a451-4076-a4d1-fda14d4e3443.jpg,528,311,999,1072,
+3df8ab08-8bcf-403e-8a0a-608fef86a979.jpg,681,271,1051,742,potato cooked
+3df8ab08-8bcf-403e-8a0a-608fef86a979.jpg,399,178,720,536,potato cooked
+3df8ab08-8bcf-403e-8a0a-608fef86a979.jpg,398,650,898,1222,fat free quark
+3df8ab08-8bcf-403e-8a0a-608fef86a979.jpg,59,489,503,997,
+402868a7-c98f-4bcb-89b0-4da811465579.jpg,344,338,726,721,apple
+48b1d9ea-a0b5-4f10-b3ce-1eab8a0c42ac.jpg,202,285,936,945,apple
+4a015dbf-ae42-494e-89da-e68a8083ee00.jpg,199,312,714,1118,banana
+628a08be-a006-4c44-bcf3-bc137f8a85cd.jpg,275,680,763,1086,lemon
+71c98a62-1a90-496c-8f0c-1b21794c010a.jpg,206,315,890,965,apple
+73c81236-7f77-427e-8911-424858909935.jpg,193,347,692,1077,
+73c81236-7f77-427e-8911-424858909935.jpg,575,486,876,1121,grilled salmon
+7a603654-bb0e-4349-8d47-ca01eea7024c.jpg,85,345,893,1171,Brot mit Harzer Käse
+9b2f8ba6-d919-476c-9d2e-99bc45071b5f.jpg,202,368,597,1066,
+9b2f8ba6-d919-476c-9d2e-99bc45071b5f.jpg,570,467,872,1139,grilled salmon
+9f4a55d7-0f14-4dc3-9134-4f84bec7abd0.jpg,204,302,910,1084,apple
+9fb02a0a-de4a-4bbb-aae5-5eea26db3c8e.jpg,304,215,872,1081,apple
+a63d06ed-bed7-4249-ba50-02de310addbe.jpg,350,524,698,855,apple
+aa576025-d277-49de-bb78-d809c1d9df57.jpg,415,454,635,753,tangerine
+b138dc0e-aaab-4f99-a47e-f263ceda25ca.jpg,372,513,746,896,apple
+c26699f6-3e42-4bda-9a36-064e391b7cb4.jpg,312,422,734,842,apricot
+c26699f6-3e42-4bda-9a36-064e391b7cb4.jpg,476,382,480,390,tangerine
+c59d2076-291f-4153-93f7-12298e5aafcd.jpg,339,515,724,892,apple
+c9bab4ce-01b7-41dc-b9f5-93e737db7010.jpg,175,691,741,924,
+cbf28b9e-2f7f-4228-a232-5e10521d4e2b.jpg,108,261,867,866,lemon cake
+e07e1003-a608-4e66-a122-66064b505590.jpg,339,558,695,920,apple
+e6a14647-34cc-49dc-8916-6c1b6e7cf98f.jpg,283,380,552,659,
+e6a14647-34cc-49dc-8916-6c1b6e7cf98f.jpg,616,580,924,874,potato cooked
+e6a14647-34cc-49dc-8916-6c1b6e7cf98f.jpg,416,665,675,966,potato cooked
+e6a14647-34cc-49dc-8916-6c1b6e7cf98f.jpg,88,717,461,1015,fat free quark
+f241fca1-b5a5-4073-badc-d4d37395f8fb.jpg,93,250,899,998,apple
+a4a5fa32-21c5-4da4-9e44-b76727f807dd.jpg,299,319,926,824,
+049d46b9-d1c2-4db8-9688-ab94cddd62f7.jpg,246,1236,324,1330,
+049d46b9-d1c2-4db8-9688-ab94cddd62f7.jpg,391,356,932,999,mango
+049d46b9-d1c2-4db8-9688-ab94cddd62f7.jpg,168,399,461,987,
+9bf82e1e-23e9-45d9-97cc-0c9a6d5e4255.jpg,302,396,958,868,
+fdb1afe9-cac2-41aa-8cb2-0d9ef86a9890.jpg,389,250,951,965,mango
+fdb1afe9-cac2-41aa-8cb2-0d9ef86a9890.jpg,187,261,468,927,
+75a59599-efcf-47b0-94f6-3d335a38e879.jpg,28,107,1038,1102,Italienischer Nudelsalat
+7b312b08-e393-4ed2-a458-843358899038.jpg,34,365,509,903,Lachsbrötchen, Fischbrötchen
+7b312b08-e393-4ed2-a458-843358899038.jpg,504,432,991,975,Lachsbrötchen, Fischbrötchen
+d0fd5901-da44-4f94-b97a-53a8759309ff.jpg,404,291,901,767,apple
+0220c5a9-d010-411e-a9fb-b98ccb3a10a9.jpg,289,161,850,873,boiled egg
+150d2ceb-ed80-4c13-933b-d72071348e8a.jpg,314,329,628,1381,banana
+982c5a11-757e-48d9-af3f-11000ad49ff7.jpg,136,132,806,1348,banana
+a9d8a4ef-e114-4d53-a121-b07fcc9ee04d.jpg,169,228,679,723,Grüne Bohnensuppe
+b33dc338-3178-4251-890d-d582aa59c6e4.jpg,67,202,609,1033,lemon cake
+b340b9a6-3703-4fe2-adce-4c50e7ebb2b0.jpg,92,193,413,597,Ofenkartoffel
+b340b9a6-3703-4fe2-adce-4c50e7ebb2b0.jpg,428,205,606,342,Gefüllte Champignons
+b340b9a6-3703-4fe2-adce-4c50e7ebb2b0.jpg,479,389,670,537,Gefüllte Champignons
+b340b9a6-3703-4fe2-adce-4c50e7ebb2b0.jpg,345,511,558,714,Gefüllte Champignons
+ba0e961b-faea-46d5-acb3-d5068fe477fe.jpg,112,159,767,1337,banana
+cb13817d-5ed3-4a7f-8aac-31db29ce3e03.jpg,187,303,624,960,banana
+dffc035e-f407-4373-911a-803ea0a52d90.jpg,271,204,867,1220,banana
+f580c599-2ffa-4d50-8ee3-c9f9815b20ca.jpg,213,171,715,1275,banana
+02365045-7847-4b6c-b534-2034a6a87ef2.jpg,171,103,724,630,apple
+13f1fcef-0d11-41e3-ab76-779bc0feec51.jpg,210,734,858,1399,apple
+1d1119f2-befe-4a29-b615-4659b545c6fc.jpg,209,442,767,1004,apple
+20de5f12-1dd7-49aa-98ce-e36a024ee935.jpg,138,504,982,1404,apple
+2247bdba-3b6d-4172-88e5-0c1ef5668810.jpg,137,204,866,936,apple
+254a8d72-37ab-446a-9a30-6023ad11b68d.jpg,227,113,1033,1006,apple
+40563b37-a288-4b22-8a2e-ae2925779f83.jpg,362,423,928,986,apple
+4948fef5-9fed-4e82-8ecf-82a7f5046330.jpg,143,312,986,1105,pasta with vegetables
+58b9916c-1ae9-4bc7-b362-ba756ff99a17.jpg,210,40,933,781,apple
+7bc9f6bd-aa9d-43f7-a84b-5a653e3d2f64.jpg,59,155,798,841,apple
+7dff6c35-5bbc-4df6-b9b8-00f61df1c620.jpg,283,447,858,1038,apple
+82e8e78a-bfd2-4475-a96b-48498af28195.jpg,245,231,855,828,apple
+8452902a-b4b6-4d02-b543-ef8bf161b291.jpg,348,226,983,895,apple
+86340465-c614-4eee-ba70-6776febee35b.jpg,287,472,854,1045,apple
+ab37bdbd-232f-4c3a-b8ef-cfead6dcb041.jpg,236,180,822,758,apple
+b119ccee-c811-46b9-b53e-3fbac408b07b.jpg,101,294,967,1097,pasta with vegetables
+e24d462a-b498-4522-ba79-56febaa3c82c.jpg,106,41,834,743,apple
+e2f69b5a-b6dc-4284-a412-0876ee39134c.jpg,203,243,827,879,apple
+442c1d59-a566-4ac4-a800-322df4843b71.jpg,503,283,1037,821,sweet potato fries
+442c1d59-a566-4ac4-a800-322df4843b71.jpg,567,811,946,1198,fat free quark
+442c1d59-a566-4ac4-a800-322df4843b71.jpg,54,316,474,776,Gebackene Hähnchenbrust, Jalapeño
+4b7072ac-b29a-42d7-a2e9-dbf0b66d57bd.jpg,286,773,968,1197,Gebackenes Hähnchen-Brustfilet
+4b7072ac-b29a-42d7-a2e9-dbf0b66d57bd.jpg,24,186,988,845,Ensaladilla, Kartoffel-Gemüse Pfanne
+e89f14ef-9d4b-4513-bac7-1b9845ddbbe1.jpg,113,198,693,808,pizza
+ed65310b-a613-4c9b-b90c-3e2b2e923b61.jpg,377,239,888,925,cappuccino unsweetened
+f4a32206-2103-4edc-9069-920f87090220.jpg,209,329,816,940,dampfnudel
+4e2332e6-d071-4176-a344-57ddaa525556.jpg,383,452,916,1200,farmhouse bread
+996112fe-ff37-4fb5-b823-a72e6b4e5e46.jpg,304,500,880,1011,apple
+004536f6-8fa0-4f32-b714-952c15bd72e8.jpg,268,496,828,1266,boiled egg
+2e9d3555-7787-40f9-9dfd-9677d0acd82e.jpg,227,207,708,497,Feine Zanderfilets
+2e9d3555-7787-40f9-9dfd-9677d0acd82e.jpg,71,426,1010,1225,green tagliatelle pasta cooked
+66e42f83-0226-4da6-92c2-e8e0936bd587.jpg,330,147,954,1362,banana
+6e94d0d9-51a6-4e03-85cd-2ac29c8975d7.jpg,364,167,863,1376,banana
+8299f6ce-88a5-44b7-be1b-d601fa278c6c.jpg,361,611,858,969,cracker
+8d7f52ef-5db5-4ae0-9734-151bf39f42c0.jpg,226,15,879,1316,banana
+9faf8ded-9322-4802-9ea9-761ec3bcaf2c.jpg,240,121,853,1363,banana
+caac3c2e-8af3-40dc-9d3e-c3975e3e1385.jpg,299,738,996,1253,potato salad
+caac3c2e-8af3-40dc-9d3e-c3975e3e1385.jpg,406,217,985,806,bread with butter and cheese
+caac3c2e-8af3-40dc-9d3e-c3975e3e1385.jpg,36,413,474,993,fried fish
+d8a1d6f8-d91d-4505-ac1c-0a628b932ef9.jpg,520,632,1053,1105,spinach
+d8a1d6f8-d91d-4505-ac1c-0a628b932ef9.jpg,199,184,975,732,green tagliatelle pasta cooked
+d8a1d6f8-d91d-4505-ac1c-0a628b932ef9.jpg,28,558,519,1069,Feine Zanderfilets
+ec673ca0-e870-48bd-8573-877e1fffa6eb.jpg,373,657,809,1178,boiled egg
+1525adf4-5847-4abd-ad1a-21a68ee618b1.jpg,212,219,787,778,apple
+167b0da6-3525-4f2a-8d20-2b7da36fc256.jpg,121,347,981,1075,farmhouse bread
+19decdd1-3c71-41cd-8adf-40d57f1f18f0.jpg,167,296,816,921,apple
+32f217ff-0626-4a2c-83af-f4730cb7596e.jpg,498,874,937,1321,fried fish
+32f217ff-0626-4a2c-83af-f4730cb7596e.jpg,67,809,528,1218,fried fish
+32f217ff-0626-4a2c-83af-f4730cb7596e.jpg,77,274,958,967,green tagliatelle pasta cooked
+74dc3361-bcb0-4059-a0be-9d9f5211d7ee.jpg,275,266,750,784,apple
+785eadd0-f225-4094-a78f-95bf719d508a.jpg,190,294,815,885,apple
+d0b29b89-f6fd-442a-9632-9c9d94946a63.jpg,152,458,551,1124,rice cooked
+d0b29b89-f6fd-442a-9632-9c9d94946a63.jpg,479,333,968,1204,chili con carne
+eb1d4e26-84b5-4c7e-a79b-00fcbcd89404.jpg,10,280,432,1112,rice cooked
+eb1d4e26-84b5-4c7e-a79b-00fcbcd89404.jpg,362,323,1013,1081,chili con carne
+3dab6858-eedb-4549-bcb3-d66fe5f1aa4e.jpg,37,539,380,870,Schweine Medaillons
+3dab6858-eedb-4549-bcb3-d66fe5f1aa4e.jpg,160,349,1012,1195,Tomatenreis
+63b351da-4dd4-4036-8fcf-3510f9539ae1.jpg,86,277,641,673,marble cake
+80d100ab-6ca2-49c8-b4b5-bfdac3cfaedc.jpg,202,173,747,1268,rhubarb cake
+1266c454-7333-412e-8f05-7f4a7af1d5a7.jpg,267,441,799,1076,lemon
+32b4cb99-0a93-4e3e-885c-1b40086a3a24.jpg,84,308,1027,780,asparagus (group)
+32b4cb99-0a93-4e3e-885c-1b40086a3a24.jpg,280,645,830,1067,Olivenbrot
+3aa951ed-cbf9-4c22-88fe-7d3f74a9c8e4.jpg,110,324,987,1151,pasta, tomato sauce, vegetables
+48740466-3d7a-4b64-baee-547532dda169.jpg,193,233,602,689,pepper
+8ddf3b16-b219-4512-b434-840583bb3d1d.jpg,410,808,872,1256,Rinderleber
+8ddf3b16-b219-4512-b434-840583bb3d1d.jpg,62,248,1039,873,pasta salad with peas, ham, mayonnaise
+b27a9066-4247-425c-8d33-e74614c8773b.jpg,314,95,668,1160,zucchini noodles
+cda82095-012a-4232-b22c-e219931f71a0.jpg,655,530,1038,910,pork skewer
+cda82095-012a-4232-b22c-e219931f71a0.jpg,309,216,798,647,green salad
+cda82095-012a-4232-b22c-e219931f71a0.jpg,73,490,719,1147,pasta salad with french dressing
+020d4ef5-1f19-459e-a24d-1b75dd61c602.jpg,134,268,867,772,schupfnudeln
+020d4ef5-1f19-459e-a24d-1b75dd61c602.jpg,230,734,815,1190,chicken stroganoff with sauce
+0a454935-ef61-49d4-9f56-7a1085861bb4.jpg,127,324,633,666,mixed vegetables
+0a454935-ef61-49d4-9f56-7a1085861bb4.jpg,585,402,989,926,chicken stroganoff with sauce
+0a454935-ef61-49d4-9f56-7a1085861bb4.jpg,58,616,799,1157,schupfnudeln
+3d359653-f8d5-4bd2-95ba-40cd60f748e2.jpg,178,392,807,1032,mixed vegetables
+5f9cba40-576b-46ea-a732-f90943316423.jpg,399,414,807,772,boiled egg
+66d72757-f8f2-405e-960d-d329de6f2d8f.jpg,71,195,455,528,mango
+6ab092e3-d00e-4392-85c1-001ae4160cd2.jpg,126,509,995,775,rustica rauchpeitschen
+71b4b602-01c1-4179-a095-7c6d50d606dd.jpg,107,419,884,1050,Ziegencamembert
+7fd70d74-a151-4dee-93d5-959260775139.jpg,230,66,617,378,pepper
+7fd70d74-a151-4dee-93d5-959260775139.jpg,97,453,437,767,Kaba, Kakao
+8fa2422d-ecbd-4661-ae8e-b723bdec4404.jpg,255,0,963,727,Fritz-Kola
+9fd9407d-94ff-4ca4-9e7c-bd4150ff7cff.jpg,205,352,998,1008,toast with butter
+aba26b43-cdfa-4d64-9931-4ba5abae0bd8.jpg,255,144,780,629,pasta salad with peas, ham, mayonnaise
+aba26b43-cdfa-4d64-9931-4ba5abae0bd8.jpg,294,777,699,947,Grillwurst
+aba26b43-cdfa-4d64-9931-4ba5abae0bd8.jpg,314,840,656,1076,Grillwurst
+aba26b43-cdfa-4d64-9931-4ba5abae0bd8.jpg,115,808,969,1365,asparagus (group)
+f851b952-dc84-42d9-b982-81bb7e9c001e.jpg,399,352,793,744,Blattsalat
+0d7f7f13-8834-4729-a507-152291140848.jpg,0,321,339,679,potato mash
+28eb91e4-b797-4360-83ef-c93667cdd7ea.jpg,193,427,485,785,parmesan
+38a16458-dccf-4007-905a-deff58dd4e7c.jpg,301,667,769,1082,schokokeks, vollmilch
+43588231-ba79-4016-a8d3-d3eaff6c82e8.jpg,240,364,593,567,Grillwurst
+43588231-ba79-4016-a8d3-d3eaff6c82e8.jpg,463,344,931,1185,asparagus (group)
+43588231-ba79-4016-a8d3-d3eaff6c82e8.jpg,75,513,704,1054,pasta, tomato sauce, vegetables
+5874805d-f2bb-4274-a171-aa1fc0e8dbb3.jpg,155,453,844,1171,cream cheese
+7b0eae93-eff2-4455-ba7d-57e92a82684c.jpg,553,780,712,956,schokokeks, vollmilch
+810df69d-2261-4285-8c3e-d3777a3a434e.jpg,0,529,395,880,potato mash
+810df69d-2261-4285-8c3e-d3777a3a434e.jpg,326,231,587,599,Gefüllte Paprika
+9609de2a-e9f0-47a7-98d1-27b55cbaad60.jpg,275,334,943,962,green beans
+b842bc0a-449c-426b-b269-87c74f9402df.jpg,439,274,1019,1730,Beer, Export
+d7b91526-2777-46cf-8800-35466c57fa19.jpg,179,126,714,641,Radieschen, frisch
+d7b91526-2777-46cf-8800-35466c57fa19.jpg,411,659,904,1228,harz cheese
+da173bc0-8961-437f-aae1-c99ff6bd9e20.jpg,336,381,1025,898,pickle
+3d669a0f-9e50-4079-8ff9-aba6e3e47563.jpg,25,488,345,749,Kaba, Kakao
+3d669a0f-9e50-4079-8ff9-aba6e3e47563.jpg,290,136,583,420,pepper
+411b0c9d-6076-4c6c-af7a-5702a4b32b48.jpg,197,358,500,709,water
+5cb5dfb5-4cde-4aae-91cf-8ee85db1ad8b.jpg,79,683,1420,1720,slice of bread
+67ff0652-9840-454b-b353-d105bf447c38.jpg,310,306,625,644,Gewürzgurken, knackig und würzig
+84d77549-58f4-4e1a-bbe3-20f6020a8296.jpg,167,279,613,712,pear
+cc21df60-a99e-44db-9c75-743d6a17e493.jpg,217,0,1012,1303,Durbacher Spätburgunder Weissherbst, 2007 Qua...
+e786600c-10e8-45f7-9f03-42c2f74875a4.jpg,351,914,948,1460,chocolate
+e786600c-10e8-45f7-9f03-42c2f74875a4.jpg,545,602,970,934,chocolate
+2a5a7232-b71e-4a82-b9fc-2bfe0b1b16e3.jpg,117,235,1003,1061,Gemüse-Wok-Reis
+38d90d52-eb3c-44b7-8f17-02bdea5b5f0b.jpg,206,186,662,780,Nudelauflauf, mit Käse
+3e55eef5-de68-44af-a8c4-9ecdd15687c1.jpg,448,398,914,958,rice cooked
+3e55eef5-de68-44af-a8c4-9ecdd15687c1.jpg,110,372,536,995,Asia Pfanne, Würziges Wokgemüse mit Natu...
+42987c24-3b23-42ce-ac3b-9860f8329d07.jpg,115,310,906,996,hamburger
+46865657-41fa-427c-9400-d4e34fcd61c0.jpg,301,220,749,824,pear
+5b5f3378-d992-45e7-8306-8bd98a618bff.jpg,136,393,970,849,pear
+5ea83be1-c081-4eb4-b7fb-dad770fc9118.jpg,70,227,990,1192,Currywurst + Pommes
+69030afe-e236-498c-90d6-49975e354bd9.jpg,106,54,944,1167,water
+7f1449c6-a05d-4dbb-9aca-c85905c84a0e.jpg,290,397,759,976,pear
+822dce1b-1b4b-4d24-8117-09250e819ab3.jpg,258,198,1006,1292,hamburger
+ab3feafb-508a-4bf3-b0ad-2590beedef68.jpg,113,440,1026,1145,rice cooked
+b341c175-5525-43f5-b248-9e0f3f8c3d77.jpg,300,30,1098,1190,chocolate
+b963830f-acbc-471a-89fb-cf31bdf8e94e.jpg,45,531,1031,1155,banana
+bd4fce76-d5f3-4dc3-ad95-cd7cd2885c13.jpg,149,241,1022,879,hamburger
+e5cd6297-d40a-41f4-bc47-d8232edb379e.jpg,185,359,772,997,apple
