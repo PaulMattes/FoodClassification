@@ -72,11 +72,11 @@ export class CanvasForFoodComponent implements OnInit {
       box = new CSVRecord();
 
       box.bildName = b.bildName;
-      box.essen = b.essen;
       box.x1 = b.x1;
       box.y1 = b.y1;
       box.x2 = b.x2;
       box.y2 = b.y2;
+      box.essen = b.essen;
       
       this.newBoxes.push(box);
     });
