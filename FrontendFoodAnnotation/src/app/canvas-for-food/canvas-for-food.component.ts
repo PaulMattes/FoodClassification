@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CSVRecord } from '../csv-record';
-import { ReactiveFormsModule } from '@angular/forms';
+import * as firebase from 'firebase';
 
 @Component({
   selector: 'app-canvas-for-food',
@@ -8,6 +8,9 @@ import { ReactiveFormsModule } from '@angular/forms';
   styleUrls: ['./canvas-for-food.component.css']
 })
 export class CanvasForFoodComponent implements OnInit {
+
+  storage = firebase.storage();
+  //firestore = firebase.firestore();
 
   name = "Annotation";
   indexText = "index";
@@ -37,6 +40,7 @@ export class CanvasForFoodComponent implements OnInit {
   private context: CanvasRenderingContext2D;
   private layer1CanvasElement: any;
 
+  filePath = "";
   fileList = [];
 
   index = 0;
@@ -61,7 +65,7 @@ export class CanvasForFoodComponent implements OnInit {
       this.fileList = [];
 
       for(var i = 0; i < event.target.files.length; i++) {
-          this.fileList.push(event.target.files[i].name);   
+        this.fileList.push(event.target.files[i]);   
       }
     }  
   }
@@ -121,8 +125,9 @@ export class CanvasForFoodComponent implements OnInit {
 
     if(this.fileList.length != 0){
       this.image = new Image();
-      this.name = this.fileList[this.index];
-      this.image.src = "assets/detection/" + this.fileList[this.index];
+      this.name = this.fileList[this.index].name;
+      this.image.src = this.filePath + this.fileList[this.index].name;
+      this.initText = this.filePath + '/' + this.fileList[this.index].name;
       this.image.onload = () => {
         this.imgWidth = this.image.width;
         this.imgHeight = this.image.height;

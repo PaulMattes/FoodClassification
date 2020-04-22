@@ -1,13 +1,14 @@
 
 
 <div #div1>
-  <input type="file" id="input" multiple (change)="handleFiles($event)">
+  <input type="file" #imageReader id="input" multiple (change)="handleFiles($event)">
   <input type="file" #csvReader name="Upload CSV" id="txtFileUpload" (change)="uploadListenerCSV($event)" accept=".csv" />
 
   <p>{{name}}</p>
   <p>{{indexText}}</p>
   <p>{{initText}}</p>
 
+  <input [(ngModel)]=filePath placeholder="Path"/>
 
   <div *ngFor="let b of boundingBoxes">
       <label>essen Name:
