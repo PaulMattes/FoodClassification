@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CSVRecord } from '../csv-record';
-import * as firebase from 'firebase';
+import { FirebaseService } from '../firebase.service';
 
 @Component({
   selector: 'app-canvas-for-food',
@@ -9,8 +9,7 @@ import * as firebase from 'firebase';
 })
 export class CanvasForFoodComponent implements OnInit {
 
-  storage = firebase.storage();
-  //firestore = firebase.firestore();
+  firebaseService: FirebaseService;
 
   name = "Annotation";
   indexText = "index";
@@ -48,7 +47,9 @@ export class CanvasForFoodComponent implements OnInit {
   indexForBoundingBoxes = 0;
   testIndex = 0;
 
-  constructor() { }
+  constructor(firebaseService: FirebaseService) {
+    this.firebaseService = firebaseService;
+  }
 
   ngOnInit(): void {
     this.initText = "voll";

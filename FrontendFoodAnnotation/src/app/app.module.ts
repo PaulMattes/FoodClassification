@@ -9,11 +9,9 @@ import { CanvasForFoodComponent } from './canvas-for-food/canvas-for-food.compon
 import { CsvModelComponent } from './csv-model/csv-model.component';
 
 import { AngularFireModule } from '@angular/fire';
-import { AngularFirestoreModule } from '@angular/fire/firestore';
 import { AngularFireStorageModule } from '@angular/fire/storage';
 
 
-AngularFireModule.initializeApp(environment.firebase);
 
 @NgModule({
   declarations: [
@@ -23,7 +21,7 @@ AngularFireModule.initializeApp(environment.firebase);
   ],
   imports: [
     BrowserModule,
-    AngularFirestoreModule,
+    AngularFireModule.initializeApp(environment.firebase),
     AngularFireStorageModule,
     AppRoutingModule,
     FormsModule
