@@ -49,6 +49,7 @@ export class CanvasForFoodComponent implements OnInit {
   @ViewChild("layer1", { static: false }) layer1Canvas: ElementRef;
   private context: CanvasRenderingContext2D;
   private layer1CanvasElement: any;
+  private isMouseDown: boolean;
 
   filePath = "";
   fileList = [];
@@ -151,6 +152,8 @@ export class CanvasForFoodComponent implements OnInit {
       }
       i++;
     });
+
+    this.redraw();
   }
 
   nextImage() {
@@ -255,6 +258,7 @@ export class CanvasForFoodComponent implements OnInit {
 
     if (this.firstImage) {
       this.layer1CanvasElement.addEventListener("mousedown", function(e) {
+        parent.isMouseDown = true;
         let b: CSVRecord;
         b = new CSVRecord();
         parent.boundingBoxes.push(b);
@@ -266,15 +270,29 @@ export class CanvasForFoodComponent implements OnInit {
         parent.boundingBoxes[parent.boundingBoxes.length - 1].bildName = parent.name;
         parent.boundingBoxes[parent.boundingBoxes.length - 1].essen = "essen";
       });
+
+      this.layer1CanvasElement.addEventListener("mousemove", function(e) {
+        if (!parent.isMouseDown) return;
+        parent.context.clearRect(0, 0, parent.context.canvas.width, parent.context.canvas.height);
+        parent.context.drawImage(parent.image, 0, 0, parent.imgWidth, parent.imgHeight);
+
+        let rect = parent.layer1CanvasElement.getBoundingClientRect();
+
+        parent.boundingBoxes[parent.boundingBoxes.length - 1].x2 = e.clientX - rect.left;
+        parent.boundingBoxes[parent.boundingBoxes.length - 1].y2 = e.clientY - rect.top;
+        parent.drawRect(parent.boundingBoxes[parent.boundingBoxes.length - 1]);
+      });
   
       this.layer1CanvasElement.addEventListener("mouseup", function(e) {
+        parent.isMouseDown = false;
 
         let rect = parent.layer1CanvasElement.getBoundingClientRect();
 
         parent.boundingBoxes[parent.boundingBoxes.length - 1].x2 = e.clientX - rect.left;
         parent.boundingBoxes[parent.boundingBoxes.length - 1].y2 = e.clientY - rect.top;
         parent.indexBild++;
-        parent.drawRect(parent.boundingBoxes[parent.boundingBoxes.length - 1]);
+
+        parent.redraw();
       });
     }
     
@@ -283,12 +301,20 @@ export class CanvasForFoodComponent implements OnInit {
     });
   }
 
-  drawRect(b: any, color = "black") {
+  drawRect(b: any, color = "aqua") {
     this.context.beginPath();
     this.context.rect(b.x1, b.y1, (b.x2 - b.x1), (b.y2 - b.y1));
-    this.context.lineWidth = 10;
+    this.context.lineWidth = 2;
     this.context.strokeStyle = color;
     this.context.stroke();
+  }
+
+  redraw() {
+    this.context.clearRect(0, 0, this.context.canvas.width, this.context.canvas.height);
+    this.context.drawImage(this.image, 0, 0, this.imgWidth, this.imgHeight);
+    this.boundingBoxes.forEach(b => {
+      this.drawRect(b);
+    });
   }
 
 
