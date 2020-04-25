@@ -6,6 +6,9 @@ import { AngularFireUploadTask } from '@angular/fire/storage/task';
 import { AngularFireStorageReference } from '@angular/fire/storage/ref';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { CsvModelComponent } from '../csv-model/csv-model.component';
+import { TagSelectionDialogComponent } from '../tag-selection-dialog/tag-selection-dialog.component';
+import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+
 
 @Component({
   selector: 'app-canvas-for-food',
@@ -32,6 +35,7 @@ export class CanvasForFoodComponent implements OnInit {
   public images: string[] = [];
   public snaps: any[] = [];
   public names: string[] = [];
+  public tags: string[] = [];
 
   public headElements = ['x1', 'x2', 'y1', 'y2', 'Bildname', 'Essensname']
 
@@ -64,7 +68,7 @@ export class CanvasForFoodComponent implements OnInit {
 
   csvModel: CsvModelComponent;
 
-  constructor(afStorage: AngularFireStorage) {
+  constructor(afStorage: AngularFireStorage, public dialog: MatDialog) {
     this.afStorage = afStorage;
   }
 
@@ -268,7 +272,7 @@ export class CanvasForFoodComponent implements OnInit {
         parent.boundingBoxes[parent.boundingBoxes.length - 1].x1 = e.clientX - rect.left;
         parent.boundingBoxes[parent.boundingBoxes.length - 1].y1 = e.clientY - rect.top;
         parent.boundingBoxes[parent.boundingBoxes.length - 1].bildName = parent.name;
-        parent.boundingBoxes[parent.boundingBoxes.length - 1].essen = "essen";
+        parent.boundingBoxes[parent.boundingBoxes.length - 1].essen = "test";
       });
 
       this.layer1CanvasElement.addEventListener("mousemove", function(e) {
@@ -293,6 +297,8 @@ export class CanvasForFoodComponent implements OnInit {
         parent.indexBild++;
 
         parent.redraw();
+
+        parent.openDialog();
       });
     }
     
@@ -317,6 +323,30 @@ export class CanvasForFoodComponent implements OnInit {
     });
   }
 
+  openDialog(): void {
+    const dialogRef = this.dialog.open(TagSelectionDialogComponent, {
+      width: '500px',
+      height: '400px',
+      data: { tag: '', tags: this.tags }
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+      this.boundingBoxes[this.boundingBoxes.length - 1].essen = result;
+      this.addToTags(result);
+    });
+  }
+
+  addToTags(tag: string) {
+    let contains = false;
+    this.tags.forEach(t => {
+      if (t == tag) {
+        contains = true;
+        return;
+      }
+    });
+    if (!contains) this.tags.push(tag);
+  }
 
   save() {
     this.exportToCsv("test.csv", this.newBoxes);

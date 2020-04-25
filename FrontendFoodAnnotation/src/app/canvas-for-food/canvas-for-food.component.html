@@ -14,9 +14,9 @@
     
   <div class="row justify-content-md-center mb-4">
     <input [(ngModel)]=filePath placeholder="Path"/>
-    <button type="button" class="btn" (click)="nextImage()">Next</button>
-    <button type="button" class="btn" (click)="save()">Save for later</button>
-    <button type="button" class="btn" (click)="saveForMLkit()">Save for ML KIT</button>
+    <button mat-flat-button color="primary" type="button" class="btn" (click)="nextImage()">Nächstes Bild</button>
+    <button mat-flat-button color="primary" type="button" class="btn" (click)="save()">Fertig (CSV herunterladen)</button>
+    <button mat-flat-button color="primary" type="button" class="btn" (click)="saveForMLkit()">Exportieren (für ML Kit)</button>
     <label for="file">Upload:</label>
     <input type="file" multiple (change)="upload($event)" accept=".png,.jpg" />
   </div>
