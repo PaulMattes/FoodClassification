@@ -17,8 +17,10 @@
     <button mat-flat-button color="primary" type="button" class="btn" (click)="nextImage()">Nächstes Bild</button>
     <button mat-flat-button color="primary" type="button" class="btn" (click)="save()">Fertig (CSV herunterladen)</button>
     <button mat-flat-button color="primary" type="button" class="btn" (click)="saveForMLkit()">Exportieren (für ML Kit)</button>
-    <label for="file">Upload:</label>
-    <input type="file" multiple (change)="upload($event)" accept=".png,.jpg" />
+    <br>
+    <label for="file">Bild-Upload ({{uploadProgress}} hochgeladen):</label>
+    <input type="file" multiple (change)="upload($event)" accept=".png,.jpg"/>
+  
   </div>
 </div>
 

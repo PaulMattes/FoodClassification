@@ -1,3 +1,7 @@
 button {
     margin: 0 10px;
 }
+canvas {
+    /*max-width: 80vw;
+    max-height: 80vh;*/
+}

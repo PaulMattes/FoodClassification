@@ -9,6 +9,9 @@ import { CsvModelComponent } from '../csv-model/csv-model.component';
 import { TagSelectionDialogComponent } from '../tag-selection-dialog/tag-selection-dialog.component';
 import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
 
+import { map, finalize } from "rxjs/operators";
+import { Observable } from "rxjs";
+import { timingSafeEqual } from 'crypto';
 
 @Component({
   selector: 'app-canvas-for-food',
@@ -27,6 +30,7 @@ export class CanvasForFoodComponent implements OnInit {
   public imgHeight: number;
   public url: string;
   public image;
+  public scaleFactor = 1.0;
 
   public records: any[] = [];
   public boundingBoxes: any[] = [];
@@ -36,6 +40,7 @@ export class CanvasForFoodComponent implements OnInit {
   public snaps: any[] = [];
   public names: string[] = [];
   public tags: string[] = [];
+  public uploadProgress = 0;
 
   public headElements = ['x1', 'x2', 'y1', 'y2', 'Bildname', 'Essensname']
 
@@ -89,8 +94,23 @@ export class CanvasForFoodComponent implements OnInit {
   }
 
   async upload(event) {
+    this.uploadProgress = 0;
     for (var i = 0; i < event.target.files.length; i++) {
-      this.snaps[i] = this.afStorage.upload("/images/" + event.target.files[i].name, event.target.files[i]);
+      const path = "/images/" + event.target.files[i].name;
+      const ref = this.afStorage.ref(path);
+      this.snaps[i] = this.afStorage.upload(path, event.target.files[i]);
+      this.snaps[i].snapshotChanges()
+      .pipe(
+        finalize(() => {
+          const url = ref.getDownloadURL();
+          url.subscribe(url => {
+            if (url) {
+              this.uploadProgress++;
+            }
+          });
+        })
+      )
+      .subscribe(url => {});
     }
   }
 
@@ -195,6 +215,12 @@ export class CanvasForFoodComponent implements OnInit {
       this.image.onload = () => {
         this.imgWidth = this.image.width;
         this.imgHeight = this.image.height;
+        this.scaleFactor = 1.0;
+        while (this.imgWidth > 1000 || this.imgHeight > 1000) {
+          this.imgWidth = this.imgWidth / 2;
+          this.imgHeight = this.imgHeight / 2;
+          this.scaleFactor = this.scaleFactor * 2;
+        }
         this.showImage();
         if (this.firstImage) {
           this.firstImage = false;
@@ -269,8 +295,8 @@ export class CanvasForFoodComponent implements OnInit {
 
         let rect = parent.layer1CanvasElement.getBoundingClientRect();
 
-        parent.boundingBoxes[parent.boundingBoxes.length - 1].x1 = e.clientX - rect.left;
-        parent.boundingBoxes[parent.boundingBoxes.length - 1].y1 = e.clientY - rect.top;
+        parent.boundingBoxes[parent.boundingBoxes.length - 1].x1 = (e.clientX - rect.left) * parent.scaleFactor;
+        parent.boundingBoxes[parent.boundingBoxes.length - 1].y1 = (e.clientY - rect.top) * parent.scaleFactor;
         parent.boundingBoxes[parent.boundingBoxes.length - 1].bildName = parent.name;
         parent.boundingBoxes[parent.boundingBoxes.length - 1].essen = "test";
       });
@@ -282,8 +308,8 @@ export class CanvasForFoodComponent implements OnInit {
 
         let rect = parent.layer1CanvasElement.getBoundingClientRect();
 
-        parent.boundingBoxes[parent.boundingBoxes.length - 1].x2 = e.clientX - rect.left;
-        parent.boundingBoxes[parent.boundingBoxes.length - 1].y2 = e.clientY - rect.top;
+        parent.boundingBoxes[parent.boundingBoxes.length - 1].x2 = (e.clientX - rect.left) * parent.scaleFactor;
+        parent.boundingBoxes[parent.boundingBoxes.length - 1].y2 = (e.clientY - rect.top) * parent.scaleFactor;
         parent.drawRect(parent.boundingBoxes[parent.boundingBoxes.length - 1]);
       });
   
@@ -292,8 +318,8 @@ export class CanvasForFoodComponent implements OnInit {
 
         let rect = parent.layer1CanvasElement.getBoundingClientRect();
 
-        parent.boundingBoxes[parent.boundingBoxes.length - 1].x2 = e.clientX - rect.left;
-        parent.boundingBoxes[parent.boundingBoxes.length - 1].y2 = e.clientY - rect.top;
+        parent.boundingBoxes[parent.boundingBoxes.length - 1].x2 = (e.clientX - rect.left) * parent.scaleFactor;
+        parent.boundingBoxes[parent.boundingBoxes.length - 1].y2 = (e.clientY - rect.top) * parent.scaleFactor;
         parent.indexBild++;
 
         parent.redraw();
@@ -309,7 +335,7 @@ export class CanvasForFoodComponent implements OnInit {
 
   drawRect(b: any, color = "aqua") {
     this.context.beginPath();
-    this.context.rect(b.x1, b.y1, (b.x2 - b.x1), (b.y2 - b.y1));
+    this.context.rect(b.x1 / this.scaleFactor, b.y1 / this.scaleFactor, (b.x2 - b.x1) / this.scaleFactor, (b.y2 - b.y1) / this.scaleFactor);
     this.context.lineWidth = 2;
     this.context.strokeStyle = color;
     this.context.stroke();
