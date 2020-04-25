@@ -1,35 +1,61 @@
 
 
 <div #div1>
-  <input type="file" #imageReader id="input" multiple (change)="handleFiles($event)">
-  <input type="file" #csvReader name="Upload CSV" id="txtFileUpload" (change)="uploadListenerCSV($event)" accept=".csv" />
-
-  <p>{{name}}</p>
-  <p>{{indexText}}</p>
-  <p>{{initText}}</p>
-
-  <input [(ngModel)]=filePath placeholder="Path"/>
-
-  <div *ngFor="let b of boundingBoxes">
-      <label>essen Name:
-          <input [(ngModel)]=b.x1 placeholder="x1"/>
-          <input [(ngModel)]=b.x2 placeholder="x2"/>
-          <input [(ngModel)]=b.y1 placeholder="y1"/>
-          <input [(ngModel)]=b.y2 placeholder="y2"/>
-          <input [(ngModel)]=b.bildName placeholder="bildName"/>
-          <input [(ngModel)]=b.essen placeholder="essen"/>
-          <button type="button" class="btn" (click)="delete(b)">Delete</button>
-      </label>
+  <div #div1 class="row justify-content-md-center mb-4">
+    <label for="file">CSV-File upload (from local files)</label>
+    <input type="file" #csvReader name="Upload CSV" id="txtFileUpload" (change)="uploadListenerCSV($event)" accept=".csv" />
   </div>
-
-  <button type="button" class="btn" (click)="nextImage()">Next</button>
-  <button type="button" class="btn" (click)="previousImage()">Previous</button>
-  <button type="button" class="btn" (click)="toStart()">to the Start</button>
-  <button type="button" class="btn" (click)="save()">Save</button>
-</div>
   
+  <div class="row justify-content-md-center mb-4">
+    <p>{{name}}</p>
+    <p>{{indexText}}</p>
+    <p>{{initText}}</p>
+  </div>
+    
+  <div class="row justify-content-md-center mb-4">
+    <input [(ngModel)]=filePath placeholder="Path"/>
+    <button type="button" class="btn" (click)="nextImage()">Next</button>
+    <button type="button" class="btn" (click)="save()">Save for later</button>
+    <button type="button" class="btn" (click)="saveForMLkit()">Save for ML KIT</button>
+    <label for="file">Upload:</label>
+    <input type="file" multiple (change)="upload($event)" accept=".png,.jpg" />
+  </div>
+</div>
 
 <div style="position: relative;">    
   <canvas #layer1 id="layer1" 
-   style="position: absolute; left: 0; top: 0; z-index: 0;"></canvas>
+   style="position: relative;"></canvas>
+</div>
+
+<div class="container text-left">
+  <table annotationTable>
+    <thead>
+      <tr>
+        <th *ngFor="let head of headElements" scope="col">{{head}}</th>
+      </tr>
+    </thead>
+    <tr *ngFor="let b of boundingBoxes">
+      <td>
+        <input [(ngModel)]=b.x1 placeholder="x1"/>
+      </td>
+      <td>
+        <input [(ngModel)]=b.x2 placeholder="x2"/>
+      </td>
+      <td>
+        <input [(ngModel)]=b.y1 placeholder="y1"/>
+      </td>
+      <td>
+        <input [(ngModel)]=b.y2 placeholder="y2"/>
+      </td>
+      <td>
+        <input [(ngModel)]=b.bildName placeholder="Bildname"/>
+      </td>
+      <td>
+        <input [(ngModel)]=b.essen placeholder="Essensname"/>
+      </td>
+      <td>
+        <button type="button" class="btn" (click)="delete(b)">Delete</button>    
+      </td>
+    </tr>
+  </table>
 </div>

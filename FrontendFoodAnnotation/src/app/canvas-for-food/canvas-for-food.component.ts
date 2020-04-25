@@ -1,6 +1,11 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { CSVRecord } from '../csv-record';
+import { CSVRecordMLKIT } from '../csv-record-mlkit';
 import { FirebaseService } from '../firebase.service';
+import { AngularFireUploadTask } from '@angular/fire/storage/task';
+import { AngularFireStorageReference } from '@angular/fire/storage/ref';
+import { AngularFireStorage } from '@angular/fire/storage';
+import { CsvModelComponent } from '../csv-model/csv-model.component';
 
 @Component({
   selector: 'app-canvas-for-food',
@@ -9,7 +14,7 @@ import { FirebaseService } from '../firebase.service';
 })
 export class CanvasForFoodComponent implements OnInit {
 
-  firebaseService: FirebaseService;
+  afStorage: AngularFireStorage;
 
   name = "Annotation";
   indexText = "index";
@@ -23,6 +28,12 @@ export class CanvasForFoodComponent implements OnInit {
   public records: any[] = [];
   public boundingBoxes: any[] = [];
   public newBoxes: any[] = [];
+  public csvMLkitBoxes: any[] = [];
+  public images: string[] = [];
+  public snaps: any[] = [];
+  public names: string[] = [];
+
+  public headElements = ['x1', 'x2', 'y1', 'y2', 'Bildname', 'Essensname']
 
   public boundingBox: CSVRecord;
 
@@ -47,17 +58,42 @@ export class CanvasForFoodComponent implements OnInit {
   indexForBoundingBoxes = 0;
   testIndex = 0;
 
-  constructor(firebaseService: FirebaseService) {
-    this.firebaseService = firebaseService;
+  ref: AngularFireStorageReference;
+  task: AngularFireUploadTask;
+
+  csvModel: CsvModelComponent;
+
+  constructor(afStorage: AngularFireStorage) {
+    this.afStorage = afStorage;
   }
 
   ngOnInit(): void {
     this.initText = "voll";
     this.boundingBox = new CSVRecord();
+    this.afStorage.ref("/images/").listAll().subscribe(n => {
+      n.items.forEach(b => {
+        this.names.push(b.name);
+        this.download(this.names[0]);
+        console.log(b.name);
+      });
+    });
   }
 
   ngAfterViewInit() {
     this.contentHeight = this.div1.nativeElement.offsetHeight;
+  }
+
+  async upload(event) {
+    for (var i = 0; i < event.target.files.length; i++) {
+      this.snaps[i] = this.afStorage.upload("/images/" + event.target.files[i].name, event.target.files[i]);
+    }
+  }
+
+  download(name: string) {
+    this.afStorage.ref("/images/" + name).getDownloadURL().subscribe(d => {
+      this.filePath = d;
+      console.log(d);
+    });
   }
 
   handleFiles(event) {
@@ -85,6 +121,24 @@ export class CanvasForFoodComponent implements OnInit {
       
       this.newBoxes.push(box);
     });
+    this.boundingBoxes.forEach(b => {
+      let box: CSVRecordMLKIT;
+      box = new CSVRecordMLKIT();
+
+      box.purpose = "TRAIN";
+      box.bildName = "gs://folderfoodown/" + b.bildName;
+      box.essen = b.essen;
+      box.x1 = (b.x1 / this.imgWidth);
+      box.y1 = (b.y1 / this.imgHeight);
+      box.e1 = "";
+      box.e2 = "";
+      box.x2 = (b.x2 / this.imgWidth);
+      box.y2 = (b.y2 / this.imgHeight);
+      box.e3 = "";
+      box.e4 = "";
+
+      this.csvMLkitBoxes.push(box);
+    });
   }
 
 
@@ -108,6 +162,8 @@ export class CanvasForFoodComponent implements OnInit {
     this.boundingBoxes = [];
 
     this.records.forEach(b => {
+      console.log(b.bildName);
+      console.log(this.fileList[this.index]);
       if (b.bildName == this.fileList[this.index]) {
         let box: CSVRecord;
         box = new CSVRecord();
@@ -124,11 +180,11 @@ export class CanvasForFoodComponent implements OnInit {
       }
     });
 
-    if(this.fileList.length != 0){
+    //if(this.images.length != 0){
       this.image = new Image();
-      this.name = this.fileList[this.index].name;
-      this.image.src = this.filePath + this.fileList[this.index].name;
-      this.initText = this.filePath + '/' + this.fileList[this.index].name;
+      this.name = this.names[this.index];
+      this.image.src = this.filePath;
+      this.initText = this.filePath;
       this.image.onload = () => {
         this.imgWidth = this.image.width;
         this.imgHeight = this.image.height;
@@ -139,7 +195,9 @@ export class CanvasForFoodComponent implements OnInit {
       };
 
       this.index++;
-    }
+
+      this.download(this.names[this.index]);
+    //}
   }
 
   previousImage() {
@@ -174,7 +232,7 @@ export class CanvasForFoodComponent implements OnInit {
       let curruntRecord = (<string>csvRecordsArray[i]).split(',');  
       if (curruntRecord.length == headerLength) {  
         let csvRecord: CSVRecord = new CSVRecord();  
-        csvRecord.bildName = curruntRecord[0].trim();  
+        csvRecord.bildName = curruntRecord[0].trim();
         csvRecord.x1 = parseInt(curruntRecord[1].trim());  
         csvRecord.y1 = parseInt(curruntRecord[2].trim());  
         csvRecord.x2 = parseInt(curruntRecord[3].trim());  
@@ -236,6 +294,10 @@ export class CanvasForFoodComponent implements OnInit {
 
   save() {
     this.exportToCsv("test.csv", this.newBoxes);
+  }
+
+  saveForMLkit() {
+    this.exportToCsv("mlKitCSV.csv", this.csvMLkitBoxes);
   }
 
   //###################################################################################
