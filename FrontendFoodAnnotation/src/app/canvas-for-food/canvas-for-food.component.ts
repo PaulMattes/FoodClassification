@@ -26,6 +26,8 @@ export class CanvasForFoodComponent implements OnInit {
   indexText = "index";
   initText = "leer";
 
+  public subfolder = '1';
+
   public imgWidth: number;
   public imgHeight: number;
   public url: string;
@@ -41,8 +43,9 @@ export class CanvasForFoodComponent implements OnInit {
   public names: string[] = [];
   public tags: string[] = [];
   public uploadProgress = 0;
+  public totalUploadFiles = 0;
 
-  public headElements = ['x1', 'x2', 'y1', 'y2', 'Bildname', 'Essensname']
+  public headElements = ['x1', 'x2', 'y1', 'y2', 'Bild', 'Tag']
 
   public boundingBox: CSVRecord;
 
@@ -80,12 +83,16 @@ export class CanvasForFoodComponent implements OnInit {
   ngOnInit(): void {
     this.initText = "voll";
     this.boundingBox = new CSVRecord();
-    this.afStorage.ref("/images/").listAll().subscribe(n => {
+    this.loadImagesFromStorage();
+  }
+
+  loadImagesFromStorage() {
+    this.afStorage.ref("/dataset/" + this.subfolder + "/images").listAll().subscribe(n => {
       n.items.forEach(b => {
         this.names.push(b.name);
-        this.download(this.names[0]);
         console.log(b.name);
       });
+      this.download(this.names[0]);
     });
   }
 
@@ -95,8 +102,9 @@ export class CanvasForFoodComponent implements OnInit {
 
   async upload(event) {
     this.uploadProgress = 0;
+    this.totalUploadFiles = event.target.files.length;
     for (var i = 0; i < event.target.files.length; i++) {
-      const path = "/images/" + event.target.files[i].name;
+      const path = "/dataset/" + this.subfolder + "/images/" + event.target.files[i].name;
       const ref = this.afStorage.ref(path);
       this.snaps[i] = this.afStorage.upload(path, event.target.files[i]);
       this.snaps[i].snapshotChanges()
@@ -106,6 +114,9 @@ export class CanvasForFoodComponent implements OnInit {
           url.subscribe(url => {
             if (url) {
               this.uploadProgress++;
+              if (this.uploadProgress == this.totalUploadFiles) {
+                this.loadImagesFromStorage();
+              }
             }
           });
         })
@@ -115,7 +126,7 @@ export class CanvasForFoodComponent implements OnInit {
   }
 
   download(name: string) {
-    this.afStorage.ref("/images/" + name).getDownloadURL().subscribe(d => {
+    this.afStorage.ref("/dataset/" + this.subfolder + "/images/" + name).getDownloadURL().subscribe(d => {
       this.filePath = d;
       console.log(d);
     });
@@ -227,6 +238,7 @@ export class CanvasForFoodComponent implements OnInit {
         }
       };
 
+      this.autoSaveBoundingBoxes();
       this.index++;
 
       this.download(this.names[this.index]);
@@ -372,6 +384,44 @@ export class CanvasForFoodComponent implements OnInit {
       }
     });
     if (!contains) this.tags.push(tag);
+  }
+
+  autoSaveBoundingBoxes() {
+    if (!this.newBoxes || !this.newBoxes.length) {
+      return;
+    }
+    const separator = ',';
+    const keys = Object.keys(this.newBoxes[0]);
+    const csvContent =
+      keys.join(separator) +
+      '\n' +
+      this.newBoxes.map(row => {
+        return keys.map(k => {
+          let cell = row[k] === null || row[k] === undefined ? '' : row[k];
+          cell = cell instanceof Date
+            ? cell.toLocaleString()
+            : cell.toString().replace(/"/g, '""');
+          if (cell.search(/("|,|\n)/g) >= 0) {
+            cell = `"${cell}"`;
+          }
+          return cell;
+        }).join(separator);
+      }).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const path = "dataset/" + this.subfolder + "/tmp.csv";
+    const ref = this.afStorage.ref(path);
+    let task = this.afStorage.upload(path, blob);
+    task.snapshotChanges()
+    .pipe(
+      finalize(() => {
+        const url = ref.getDownloadURL();
+        url.subscribe(url => {
+          if (url) {
+          }
+        });
+      })
+    )
+    .subscribe(url => {});
   }
 
   save() {

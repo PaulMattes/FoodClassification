@@ -1,26 +1,12 @@
 
 
 <div #div1>
-  <div #div1 class="row justify-content-md-center mb-4">
-    <label for="file">CSV-File upload (from local files)</label>
-    <input type="file" #csvReader name="Upload CSV" id="txtFileUpload" (change)="uploadListenerCSV($event)" accept=".csv" />
-  </div>
-  
   <div class="row justify-content-md-center mb-4">
-    <p>{{name}}</p>
-    <p>{{indexText}}</p>
-    <p>{{initText}}</p>
-  </div>
-    
-  <div class="row justify-content-md-center mb-4">
+    <input [(ngModel)]=subfolder placeholder="Ordner"/>
     <input [(ngModel)]=filePath placeholder="Path"/>
     <button mat-flat-button color="primary" type="button" class="btn" (click)="nextImage()">Nächstes Bild</button>
     <button mat-flat-button color="primary" type="button" class="btn" (click)="save()">Fertig (CSV herunterladen)</button>
     <button mat-flat-button color="primary" type="button" class="btn" (click)="saveForMLkit()">Exportieren (für ML Kit)</button>
-    <br>
-    <label for="file">Bild-Upload ({{uploadProgress}} hochgeladen):</label>
-    <input type="file" multiple (change)="upload($event)" accept=".png,.jpg"/>
-  
   </div>
 </div>
 
@@ -38,26 +24,44 @@
     </thead>
     <tr *ngFor="let b of boundingBoxes">
       <td>
-        <input [(ngModel)]=b.x1 placeholder="x1"/>
+        <input class="number" [(ngModel)]=b.x1 placeholder="x1"/>
       </td>
       <td>
-        <input [(ngModel)]=b.x2 placeholder="x2"/>
+        <input class="number" [(ngModel)]=b.x2 placeholder="x2"/>
       </td>
       <td>
-        <input [(ngModel)]=b.y1 placeholder="y1"/>
+        <input class="number" [(ngModel)]=b.y1 placeholder="y1"/>
       </td>
       <td>
-        <input [(ngModel)]=b.y2 placeholder="y2"/>
+        <input class="number" [(ngModel)]=b.y2 placeholder="y2"/>
       </td>
       <td>
-        <input [(ngModel)]=b.bildName placeholder="Bildname"/>
+        <input [(ngModel)]=b.bildName placeholder="Bild"/>
       </td>
       <td>
-        <input [(ngModel)]=b.essen placeholder="Essensname"/>
+        <input [(ngModel)]=b.essen placeholder="Tag"/>
       </td>
       <td>
-        <button type="button" class="btn" (click)="delete(b)">Delete</button>    
+        <button type="button" class="btn" (click)="delete(b)">Löschen</button>    
       </td>
     </tr>
   </table>
+</div>
+
+<div #div2>
+  <br><br>
+  <div class="row justify-content-md-center mb-4">
+    <label for="file">Bild-Upload ({{uploadProgress}}/{{totalUploadFiles}} hochgeladen):</label>
+  <input type="file" multiple (change)="upload($event)" accept=".png,.jpg"/>
+  </div>
+  <div class="row justify-content-md-center mb-4">
+    <label for="file">CSV-Datei hochladen (von lokalen Dateien)</label>
+    <input type="file" #csvReader name="CSV hochladen" id="txtFileUpload" (change)="uploadListenerCSV($event)" accept=".csv" />
+  </div>
+  
+  <div class="row justify-content-md-center mb-4" style="display: none;">
+    <p>{{name}}</p>
+    <p>{{indexText}}</p>
+    <p>{{initText}}</p>
+  </div>
 </div>

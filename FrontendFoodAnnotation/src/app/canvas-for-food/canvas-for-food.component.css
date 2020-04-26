@@ -1,7 +1,8 @@
 button {
-    margin: 0 10px;
+    margin: 10px;
 }
 canvas {
-    /*max-width: 80vw;
-    max-height: 80vh;*/
+}
+input.number {
+    width: 50px;
 }
