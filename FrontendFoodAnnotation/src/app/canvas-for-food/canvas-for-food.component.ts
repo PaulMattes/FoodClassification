@@ -100,6 +100,12 @@ export class CanvasForFoodComponent implements OnInit {
     this.contentHeight = this.div1.nativeElement.offsetHeight;
   }
 
+  uploadCSVfromMLKIT() {
+    this.afStorage.ref("/dataset/" + this.subfolder + "tmp.csv").getDownloadURL().subscribe(d => {
+      this.uploadListenerCSV(d);
+    });
+  }
+
   async upload(event) {
     this.uploadProgress = 0;
     this.totalUploadFiles = event.target.files.length;
@@ -128,7 +134,6 @@ export class CanvasForFoodComponent implements OnInit {
   download(name: string) {
     this.afStorage.ref("/dataset/" + this.subfolder + "/images/" + name).getDownloadURL().subscribe(d => {
       this.filePath = d;
-      console.log(d);
     });
   }
 
@@ -200,9 +205,7 @@ export class CanvasForFoodComponent implements OnInit {
     this.boundingBoxes = [];
 
     this.records.forEach(b => {
-      console.log(b.bildName);
-      console.log(this.fileList[this.index]);
-      if (b.bildName == this.fileList[this.index]) {
+      if (b.bildName == this.names[this.index]) {
         let box: CSVRecord;
         box = new CSVRecord();
 
@@ -255,6 +258,21 @@ export class CanvasForFoodComponent implements OnInit {
     this.nextImage();
   }
 
+  uploadListenerCSVfromMLKIT(path: string) {
+    let file: File;
+    //file = new File(path);
+
+    let reader = new FileReader();  
+    //reader.readAsText(input.files[0]);  
+
+    reader.onload = () => {  
+      let csvData = reader.result;  
+      let csvRecordsArray = (<string>csvData).split(/\r\n|\n/);  
+
+      this.records = this.getDataRecordsArrayFromCSVFile(csvRecordsArray, 6);
+    };  
+  }
+
   uploadListenerCSV(event) {
     this.name = "csvFile";
 
@@ -282,7 +300,7 @@ export class CanvasForFoodComponent implements OnInit {
         csvRecord.y1 = parseInt(curruntRecord[2].trim());  
         csvRecord.x2 = parseInt(curruntRecord[3].trim());  
         csvRecord.y2 = parseInt(curruntRecord[4].trim());  
-        csvRecord.essen = curruntRecord[5].trim();  
+        csvRecord.essen = curruntRecord[5].trim();
         csvArr.push(csvRecord);  
       }  
     }  
