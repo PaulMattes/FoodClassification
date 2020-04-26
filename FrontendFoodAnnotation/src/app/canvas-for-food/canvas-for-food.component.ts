@@ -30,6 +30,8 @@ export class CanvasForFoodComponent implements OnInit {
 
   public imgWidth: number;
   public imgHeight: number;
+  public displayImgWidth: number;
+  public displayImgHeight: number;
   public url: string;
   public image;
   public scaleFactor = 1.0;
@@ -83,10 +85,13 @@ export class CanvasForFoodComponent implements OnInit {
   ngOnInit(): void {
     this.initText = "voll";
     this.boundingBox = new CSVRecord();
-    this.loadImagesFromStorage();
+    //this.loadImagesFromStorage();
   }
 
   loadImagesFromStorage() {
+    this.index = 0;
+    this.names = [];
+    this.fileList = [];
     this.afStorage.ref("/dataset/" + this.subfolder + "/images").listAll().subscribe(n => {
       n.items.forEach(b => {
         this.names.push(b.name);
@@ -178,6 +183,14 @@ export class CanvasForFoodComponent implements OnInit {
       box.e3 = "";
       box.e4 = "";
 
+      if (box.x1 < 0) box.x1 = 0;
+      if (box.x1 > 1) box.x1 = 1;
+      if (box.y1 < 0) box.y1 = 0;
+      if (box.y1 > 1) box.y1 = 1;
+      if (box.x2 < 0) box.x2 = 0;
+      if (box.x2 > 1) box.x2 = 1;
+      if (box.y2 < 0) box.y2 = 0;
+      if (box.y2 > 1) box.y2 = 1;
       this.csvMLkitBoxes.push(box);
     });
   }
@@ -229,11 +242,13 @@ export class CanvasForFoodComponent implements OnInit {
       this.image.onload = () => {
         this.imgWidth = this.image.width;
         this.imgHeight = this.image.height;
+        this.displayImgWidth = this.imgWidth;
+        this.displayImgHeight = this.imgHeight;
         this.scaleFactor = 1.0;
-        while (this.imgWidth > 1000 || this.imgHeight > 1000) {
-          this.imgWidth = this.imgWidth / 2;
-          this.imgHeight = this.imgHeight / 2;
-          this.scaleFactor = this.scaleFactor * 2;
+        while (this.displayImgWidth > 1000 || this.displayImgHeight > 1000) {
+          this.displayImgWidth = this.displayImgWidth / 2;
+          this.displayImgHeight = this.displayImgHeight / 2;
+          this.scaleFactor = this.scaleFactor / 2;
         }
         this.showImage();
         if (this.firstImage) {
@@ -310,9 +325,9 @@ export class CanvasForFoodComponent implements OnInit {
   showImage() {
     this.layer1CanvasElement = this.layer1Canvas.nativeElement;
     this.context = this.layer1CanvasElement.getContext("2d");
-    this.layer1CanvasElement.width = this.imgWidth;
-    this.layer1CanvasElement.height = this.imgHeight;
-    this.context.drawImage(this.image, 0, 0, this.imgWidth, this.imgHeight);
+    this.layer1CanvasElement.width = this.displayImgWidth;
+    this.layer1CanvasElement.height = this.displayImgHeight;
+    this.context.drawImage(this.image, 0, 0, this.displayImgWidth, this.displayImgHeight);
 
     let parent = this;
 
@@ -325,8 +340,8 @@ export class CanvasForFoodComponent implements OnInit {
 
         let rect = parent.layer1CanvasElement.getBoundingClientRect();
 
-        parent.boundingBoxes[parent.boundingBoxes.length - 1].x1 = (e.clientX - rect.left) * parent.scaleFactor;
-        parent.boundingBoxes[parent.boundingBoxes.length - 1].y1 = (e.clientY - rect.top) * parent.scaleFactor;
+        parent.boundingBoxes[parent.boundingBoxes.length - 1].x1 = (e.clientX - rect.left) / parent.scaleFactor;
+        parent.boundingBoxes[parent.boundingBoxes.length - 1].y1 = (e.clientY - rect.top) / parent.scaleFactor;
         parent.boundingBoxes[parent.boundingBoxes.length - 1].bildName = parent.name;
         parent.boundingBoxes[parent.boundingBoxes.length - 1].essen = "test";
       });
@@ -334,12 +349,12 @@ export class CanvasForFoodComponent implements OnInit {
       this.layer1CanvasElement.addEventListener("mousemove", function(e) {
         if (!parent.isMouseDown) return;
         parent.context.clearRect(0, 0, parent.context.canvas.width, parent.context.canvas.height);
-        parent.context.drawImage(parent.image, 0, 0, parent.imgWidth, parent.imgHeight);
+        parent.context.drawImage(parent.image, 0, 0, parent.displayImgWidth, parent.displayImgHeight);
 
         let rect = parent.layer1CanvasElement.getBoundingClientRect();
 
-        parent.boundingBoxes[parent.boundingBoxes.length - 1].x2 = (e.clientX - rect.left) * parent.scaleFactor;
-        parent.boundingBoxes[parent.boundingBoxes.length - 1].y2 = (e.clientY - rect.top) * parent.scaleFactor;
+        parent.boundingBoxes[parent.boundingBoxes.length - 1].x2 = (e.clientX - rect.left) / parent.scaleFactor;
+        parent.boundingBoxes[parent.boundingBoxes.length - 1].y2 = (e.clientY - rect.top) / parent.scaleFactor;
         parent.drawRect(parent.boundingBoxes[parent.boundingBoxes.length - 1]);
       });
   
@@ -348,8 +363,8 @@ export class CanvasForFoodComponent implements OnInit {
 
         let rect = parent.layer1CanvasElement.getBoundingClientRect();
 
-        parent.boundingBoxes[parent.boundingBoxes.length - 1].x2 = (e.clientX - rect.left) * parent.scaleFactor;
-        parent.boundingBoxes[parent.boundingBoxes.length - 1].y2 = (e.clientY - rect.top) * parent.scaleFactor;
+        parent.boundingBoxes[parent.boundingBoxes.length - 1].x2 = (e.clientX - rect.left) / parent.scaleFactor;
+        parent.boundingBoxes[parent.boundingBoxes.length - 1].y2 = (e.clientY - rect.top) / parent.scaleFactor;
         parent.indexBild++;
 
         parent.redraw();
@@ -365,7 +380,7 @@ export class CanvasForFoodComponent implements OnInit {
 
   drawRect(b: any, color = "aqua") {
     this.context.beginPath();
-    this.context.rect(b.x1 / this.scaleFactor, b.y1 / this.scaleFactor, (b.x2 - b.x1) / this.scaleFactor, (b.y2 - b.y1) / this.scaleFactor);
+    this.context.rect(b.x1 * this.scaleFactor, b.y1 * this.scaleFactor, (b.x2 - b.x1) * this.scaleFactor, (b.y2 - b.y1) * this.scaleFactor);
     this.context.lineWidth = 2;
     this.context.strokeStyle = color;
     this.context.stroke();
@@ -373,7 +388,7 @@ export class CanvasForFoodComponent implements OnInit {
 
   redraw() {
     this.context.clearRect(0, 0, this.context.canvas.width, this.context.canvas.height);
-    this.context.drawImage(this.image, 0, 0, this.imgWidth, this.imgHeight);
+    this.context.drawImage(this.image, 0, 0, this.displayImgWidth, this.displayImgHeight);
     this.boundingBoxes.forEach(b => {
       this.drawRect(b);
     });
