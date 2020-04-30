@@ -8,10 +8,15 @@ import { AngularFireStorage } from '@angular/fire/storage';
 import { CsvModelComponent } from '../csv-model/csv-model.component';
 import { TagSelectionDialogComponent } from '../tag-selection-dialog/tag-selection-dialog.component';
 import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog';
+import {HttpResponse, HttpClientModule} from '@angular/common/http';
+import {Http, ResponseContentType} from '@angular/http';
 
 import { map, finalize } from "rxjs/operators";
 import { Observable } from "rxjs";
 import { timingSafeEqual } from 'crypto';
+import { Annotation } from '../annotaton';
+import { BoundingBox } from '../bounding-box';
+import { CsvService } from '../csv.service';
 
 @Component({
   selector: 'app-canvas-for-food',
@@ -44,6 +49,10 @@ export class CanvasForFoodComponent implements OnInit {
   public snaps: any[] = [];
   public names: string[] = [];
   public tags: string[] = [];
+  public annotations: Annotation[] = [];
+
+  public blob: Blob;
+
   public uploadProgress = 0;
   public totalUploadFiles = 0;
 
@@ -78,7 +87,7 @@ export class CanvasForFoodComponent implements OnInit {
 
   csvModel: CsvModelComponent;
 
-  constructor(afStorage: AngularFireStorage, public dialog: MatDialog) {
+  constructor(afStorage: AngularFireStorage, public dialog: MatDialog, private csvService: CsvService) {
     this.afStorage = afStorage;
   }
 
@@ -95,7 +104,14 @@ export class CanvasForFoodComponent implements OnInit {
     this.afStorage.ref("/dataset/" + this.subfolder + "/images").listAll().subscribe(n => {
       n.items.forEach(b => {
         this.names.push(b.name);
-        console.log(b.name);
+
+        let a: Annotation;
+        a = new Annotation();
+
+        a.bildName = b.name;
+        a.boxes = [];
+
+        this.annotations.push(a);
       });
       this.download(this.names[0]);
     });
@@ -105,10 +121,29 @@ export class CanvasForFoodComponent implements OnInit {
     this.contentHeight = this.div1.nativeElement.offsetHeight;
   }
 
-  uploadCSVfromMLKIT() {
-    this.afStorage.ref("/dataset/" + this.subfolder + "tmp.csv").getDownloadURL().subscribe(d => {
-      this.uploadListenerCSV(d);
+  downloadCSVfromMLKIT() {
+    this.afStorage.ref("/dataset/" + this.subfolder + "/tmp.csv").getDownloadURL().subscribe(d => {
+      this.uploadListenerCSVfromMLKIT(d);
     });
+  }
+
+  uploadListenerCSVfromMLKIT(path: string) {
+    let file: File;
+
+    this.csvService.getCSVfile(path).subscribe(blob => (this.blob = blob));
+    
+    console.log(this.blob.size + " sdaöjkfhsdkjahf " + this.blob.type);
+
+    let reader = new FileReader();  
+    reader.readAsText(this.blob);  
+
+    reader.onload = () => {  
+      let csvData = reader.result;
+      console.log(csvData);
+      //let csvRecordsArray = (<string>csvData).split(/\r\n|\n/);  
+
+      //this.records = this.getDataRecordsArrayFromCSVFile(csvRecordsArray, 6);
+    };
   }
 
   async upload(event) {
@@ -154,67 +189,31 @@ export class CanvasForFoodComponent implements OnInit {
   }
 
   saveBoundingBoxes() {
-    this.boundingBoxes.forEach(b => {
-      let box: CSVRecord;
-      box = new CSVRecord();
 
-      box.bildName = b.bildName;
+    this.annotations[this.index - 1].boxes = [];
+
+    this.boundingBoxes.forEach(b => {
+      let box: BoundingBox;
+      box = new BoundingBox();
+
       box.x1 = b.x1;
       box.y1 = b.y1;
       box.x2 = b.x2;
       box.y2 = b.y2;
       box.essen = b.essen;
       
-      this.newBoxes.push(box);
+      this.annotations[this.index - 1].boxes.push(box);
     });
-    this.boundingBoxes.forEach(b => {
-      let box: CSVRecordMLKIT;
-      box = new CSVRecordMLKIT();
-
-      box.purpose = "TRAIN";
-      box.bildName = "gs://folderfoodown/" + b.bildName;
-      box.essen = b.essen;
-      box.x1 = (b.x1 / this.imgWidth);
-      box.y1 = (b.y1 / this.imgHeight);
-      box.e1 = "";
-      box.e2 = "";
-      box.x2 = (b.x2 / this.imgWidth);
-      box.y2 = (b.y2 / this.imgHeight);
-      box.e3 = "";
-      box.e4 = "";
-
-      if (box.x1 < 0) box.x1 = 0;
-      if (box.x1 > 1) box.x1 = 1;
-      if (box.y1 < 0) box.y1 = 0;
-      if (box.y1 > 1) box.y1 = 1;
-      if (box.x2 < 0) box.x2 = 0;
-      if (box.x2 > 1) box.x2 = 1;
-      if (box.y2 < 0) box.y2 = 0;
-      if (box.y2 > 1) box.y2 = 1;
-      this.csvMLkitBoxes.push(box);
-    });
-  }
-
-
-  delete(box: CSVRecord) {
-    let i = 0;
-
-    this.boundingBoxes.forEach(b => {
-      if (box.essen == b.essen && box.x1 == b.x1 && box.y1 == b.y1) {
-        this.boundingBoxes.splice(i,1);
-      }
-      i++;
-    });
-
-    this.redraw();
   }
 
   nextImage() {
 
     this.indexText = "" + this.index;
-
-    this.saveBoundingBoxes();
     
+    if (!(this.firstImage)){
+      this.saveBoundingBoxes();
+    }
+
     this.boundingBoxes = [];
 
     this.records.forEach(b => {
@@ -235,31 +234,31 @@ export class CanvasForFoodComponent implements OnInit {
     });
 
     //if(this.images.length != 0){
-      this.image = new Image();
-      this.name = this.names[this.index];
-      this.image.src = this.filePath;
-      this.initText = this.filePath;
-      this.image.onload = () => {
-        this.imgWidth = this.image.width;
-        this.imgHeight = this.image.height;
-        this.displayImgWidth = this.imgWidth;
-        this.displayImgHeight = this.imgHeight;
-        this.scaleFactor = 1.0;
-        while (this.displayImgWidth > 1000 || this.displayImgHeight > 1000) {
-          this.displayImgWidth = this.displayImgWidth / 2;
-          this.displayImgHeight = this.displayImgHeight / 2;
-          this.scaleFactor = this.scaleFactor / 2;
-        }
-        this.showImage();
-        if (this.firstImage) {
-          this.firstImage = false;
-        }
-      };
+    this.image = new Image();
+    this.name = this.names[this.index];
+    this.image.src = this.filePath;
+    this.initText = this.filePath;
+    this.image.onload = () => {
+      this.imgWidth = this.image.width;
+      this.imgHeight = this.image.height;
+      this.displayImgWidth = this.imgWidth;
+      this.displayImgHeight = this.imgHeight;
+      this.scaleFactor = 1.0;
+      while (this.displayImgWidth > 1000 || this.displayImgHeight > 1000) {
+        this.displayImgWidth = this.displayImgWidth / 2;
+        this.displayImgHeight = this.displayImgHeight / 2;
+        this.scaleFactor = this.scaleFactor / 2;
+      }
+      this.showImage();
+      if (this.firstImage) {
+        this.firstImage = false;
+      }
+    };
 
-      this.autoSaveBoundingBoxes();
-      this.index++;
+    //this.autoSaveBoundingBoxes();
+    this.index++;
 
-      this.download(this.names[this.index]);
+    this.download(this.names[this.index]);
     //}
   }
 
@@ -273,24 +272,32 @@ export class CanvasForFoodComponent implements OnInit {
     this.nextImage();
   }
 
-  uploadListenerCSVfromMLKIT(path: string) {
-    let file: File;
-    //file = new File(path);
+  addBoxesToAnnotations() {
 
-    let reader = new FileReader();  
-    //reader.readAsText(input.files[0]);  
+    console.log(this.records.length);
+    for (let i = 0; i < this.annotations.length; i++) {
+      this.records.forEach(b => {
+        console.log(b.bildName +"=="+ this.annotations[i].bildName);
+        if (b.bildName == this.annotations[i].bildName) {
+          let box: BoundingBox;
+          box = new BoundingBox();
 
-    reader.onload = () => {  
-      let csvData = reader.result;  
-      let csvRecordsArray = (<string>csvData).split(/\r\n|\n/);  
+          box.essen = b.essen;
+          box.x1 = b.x1;
+          box.y1 = b.y1;
+          box.x2 = b.x2;
+          box.y2 = b.y2;
 
-      this.records = this.getDataRecordsArrayFromCSVFile(csvRecordsArray, 6);
-    };  
+          this.annotations[i].boxes.push(box);
+          console.log(this.annotations[i].bildName + " " + this.annotations[i].boxes[0].essen);
+
+        }
+      });
+    }  
   }
 
   uploadListenerCSV(event) {
-    this.name = "csvFile";
-
+    
     let input = event.target;  
     let reader = new FileReader();  
     reader.readAsText(input.files[0]);  
@@ -300,7 +307,7 @@ export class CanvasForFoodComponent implements OnInit {
       let csvRecordsArray = (<string>csvData).split(/\r\n|\n/);  
 
       this.records = this.getDataRecordsArrayFromCSVFile(csvRecordsArray, 6);
-    };  
+    }; 
   }
 
   getDataRecordsArrayFromCSVFile(csvRecordsArray: any, headerLength: number) {
@@ -321,6 +328,75 @@ export class CanvasForFoodComponent implements OnInit {
     }  
     return csvArr;   
   }
+
+  save() {
+
+    this.getCSVfromAnnotation();
+    this.exportToCsv("test.csv", this.newBoxes);
+  }
+
+  getCSVfromAnnotation(){
+    this.newBoxes = [];
+    this.annotations.forEach(b => {
+      b.boxes.forEach(bo => {
+
+        console.log("name: " + b.bildName + " essen: " + bo.essen);
+
+        let box: CSVRecord;
+        box = new CSVRecord();
+
+        box.bildName = b.bildName;
+        box.x1 = bo.x1;
+        box.y1 = bo.y1;
+        box.x2 = bo.x2;
+        box.y2 = bo.y2;
+        box.essen = bo.essen;
+
+        this.newBoxes.push(box);
+      });
+    });
+  }
+
+  saveForMLkit() {
+    this.getCSVforMLKITfromAnnotation();
+    this.exportToCsv("mlKitCSV.csv", this.csvMLkitBoxes);
+  }
+
+  getCSVforMLKITfromAnnotation(){
+    this.csvMLkitBoxes = [];
+    this.annotations.forEach(b => {
+      b.boxes.forEach(bo => {
+        let box: CSVRecordMLKIT;
+        box = new CSVRecordMLKIT();
+
+        box.purpose = "TRAIN";
+        box.bildName = "gs://folderfoodown/" + b.bildName;
+
+        box.essen = bo.essen;
+        box.x1 = (bo.x1 / this.imgWidth);
+        box.y1 = (bo.y1 / this.imgHeight);
+        box.e1 = "";
+        box.e2 = "";
+        box.x2 = (bo.x2 / this.imgWidth);
+        box.y2 = (bo.y2 / this.imgHeight);
+        box.e3 = "";
+        box.e4 = "";
+  
+        if (box.x1 < 0) box.x1 = 0;
+        if (box.x1 > 1) box.x1 = 1;
+        if (box.y1 < 0) box.y1 = 0;
+        if (box.y1 > 1) box.y1 = 1;
+        if (box.x2 < 0) box.x2 = 0;
+        if (box.x2 > 1) box.x2 = 1;
+        if (box.y2 < 0) box.y2 = 0;
+        if (box.y2 > 1) box.y2 = 1;
+        this.csvMLkitBoxes.push(box);
+      });
+    });
+  }
+
+  //###################################################################################
+  //###################################################################################
 
   showImage() {
     this.layer1CanvasElement = this.layer1Canvas.nativeElement;
@@ -419,54 +495,6 @@ export class CanvasForFoodComponent implements OnInit {
     if (!contains) this.tags.push(tag);
   }
 
-  autoSaveBoundingBoxes() {
-    if (!this.newBoxes || !this.newBoxes.length) {
-      return;
-    }
-    const separator = ',';
-    const keys = Object.keys(this.newBoxes[0]);
-    const csvContent =
-      keys.join(separator) +
-      '\n' +
-      this.newBoxes.map(row => {
-        return keys.map(k => {
-          let cell = row[k] === null || row[k] === undefined ? '' : row[k];
-          cell = cell instanceof Date
-            ? cell.toLocaleString()
-            : cell.toString().replace(/"/g, '""');
-          if (cell.search(/("|,|\n)/g) >= 0) {
-            cell = `"${cell}"`;
-          }
-          return cell;
-        }).join(separator);
-      }).join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const path = "dataset/" + this.subfolder + "/tmp.csv";
-    const ref = this.afStorage.ref(path);
-    let task = this.afStorage.upload(path, blob);
-    task.snapshotChanges()
-    .pipe(
-      finalize(() => {
-        const url = ref.getDownloadURL();
-        url.subscribe(url => {
-          if (url) {
-          }
-        });
-      })
-    )
-    .subscribe(url => {});
-  }
-
-  save() {
-    this.exportToCsv("test.csv", this.newBoxes);
-  }
-
-  saveForMLkit() {
-    this.exportToCsv("mlKitCSV.csv", this.csvMLkitBoxes);
-  }
-
-  //###################################################################################
-
   exportToCsv(filename: string, rows: object[]) {
     if (!rows || !rows.length) {
       return;
@@ -505,6 +533,57 @@ export class CanvasForFoodComponent implements OnInit {
         document.body.removeChild(link);
       }
     }
+  }
+
+  autoSaveBoundingBoxes() {
+    if (!this.newBoxes || !this.newBoxes.length) {
+      return;
+    }
+    const separator = ',';
+    const keys = Object.keys(this.newBoxes[0]);
+    const csvContent =
+      keys.join(separator) +
+      '\n' +
+      this.newBoxes.map(row => {
+        return keys.map(k => {
+          let cell = row[k] === null || row[k] === undefined ? '' : row[k];
+          cell = cell instanceof Date
+            ? cell.toLocaleString()
+            : cell.toString().replace(/"/g, '""');
+          if (cell.search(/("|,|\n)/g) >= 0) {
+            cell = `"${cell}"`;
+          }
+          return cell;
+        }).join(separator);
+      }).join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const path = "dataset/" + this.subfolder + "/tmp.csv";
+    const ref = this.afStorage.ref(path);
+    let task = this.afStorage.upload(path, blob);
+    task.snapshotChanges()
+    .pipe(
+      finalize(() => {
+        const url = ref.getDownloadURL();
+        url.subscribe(url => {
+          if (url) {
+          }
+        });
+      })
+    )
+    .subscribe(url => {});
+  }
+
+  delete(box: CSVRecord) {
+    let i = 0;
+
+    this.boundingBoxes.forEach(b => {
+      if (box.essen == b.essen && box.x1 == b.x1 && box.y1 == b.y1) {
+        this.boundingBoxes.splice(i,1);
+      }
+      i++;
+    });
+
+    this.redraw();
   }
 
 }

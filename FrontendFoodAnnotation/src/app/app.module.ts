@@ -19,6 +19,8 @@ import { TagSelectionDialogComponent } from './tag-selection-dialog/tag-selectio
 import {MatButtonModule} from '@angular/material/button';
 import {MatChipsModule} from '@angular/material/chips';
 
+import { HttpClientModule } from '@angular/common/http';
+
 
 @NgModule({
   declarations: [
@@ -38,7 +40,8 @@ import {MatChipsModule} from '@angular/material/chips';
     MatButtonModule,
     MatInputModule,
     MatFormFieldModule,
-    MatChipsModule
+    MatChipsModule,
+    HttpClientModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
