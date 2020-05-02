@@ -5,4 +5,6 @@ export class CSVRecord {
     x2: number;
     y2: number;
     essen: string;
+    width: number;
+    height: number;
 }

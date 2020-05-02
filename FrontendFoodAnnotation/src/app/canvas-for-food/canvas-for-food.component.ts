@@ -11,12 +11,13 @@ import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog
 import {HttpResponse, HttpClientModule} from '@angular/common/http';
 import {Http, ResponseContentType} from '@angular/http';
 
-import { map, finalize } from "rxjs/operators";
+import { map, finalize, delay } from "rxjs/operators";
 import { Observable } from "rxjs";
 import { timingSafeEqual } from 'crypto';
 import { Annotation } from '../annotaton';
 import { BoundingBox } from '../bounding-box';
 import { CsvService } from '../csv.service';
+import { Tag } from '../tag';
 
 @Component({
   selector: 'app-canvas-for-food',
@@ -50,6 +51,7 @@ export class CanvasForFoodComponent implements OnInit {
   public names: string[] = [];
   public tags: string[] = [];
   public annotations: Annotation[] = [];
+  public tagList: Tag[] = [];
 
   public blob: Blob;
 
@@ -109,6 +111,8 @@ export class CanvasForFoodComponent implements OnInit {
         a = new Annotation();
 
         a.bildName = b.name;
+        a.added = false;
+        a.filePath = "";
         a.boxes = [];
 
         this.annotations.push(a);
@@ -171,10 +175,42 @@ export class CanvasForFoodComponent implements OnInit {
     }
   }
 
-  download(name: string) {
+  async download(name: string) {
     this.afStorage.ref("/dataset/" + this.subfolder + "/images/" + name).getDownloadURL().subscribe(d => {
       this.filePath = d;
     });
+  }
+
+  async downLoadImagesByURL() {
+    let i = 0;
+
+    console.log("Länge von names: " + this.names.length);
+    this.names.forEach(n => {
+      this.afStorage.ref("/dataset/" + this.subfolder + "/images/" + n).getDownloadURL().subscribe(d => {
+        this.annotations.forEach(a => {
+          if (a.bildName == n) {
+            this.annotations[i].filePath = d;
+          }
+        })
+        i++;
+      });
+    });
+  }
+
+  showAnnotations() {
+    this.annotations.forEach(a => {
+      console.log("bildName: " + a.bildName + " width: " + a.width + " height: " + a.height);
+    });
+  }
+
+  async loadImageSize() {
+    for(var i = 0; i < this.annotations.length - 1; i++) {
+      this.image = new Image();
+      this.image.src = this.annotations[i].filePath;
+      console.log("width: " + this.image.width);
+      this.annotations[i].width = this.image.width;
+      this.annotations[i].height = this.image.height;
+    }
   }
 
   handleFiles(event) {
@@ -201,9 +237,14 @@ export class CanvasForFoodComponent implements OnInit {
       box.x2 = b.x2;
       box.y2 = b.y2;
       box.essen = b.essen;
+      //this.annotations[this.index - 1].height = b.height;
+      //this.annotations[this.index - 1].width = b.width;
       
       this.annotations[this.index - 1].boxes.push(box);
     });
+
+    this.addTagsForMLKIT(this.annotations[this.index - 1]);
+    this.annotations[this.index - 1].added = true;
   }
 
   nextImage() {
@@ -217,7 +258,7 @@ export class CanvasForFoodComponent implements OnInit {
     this.boundingBoxes = [];
 
     this.records.forEach(b => {
-      if (b.bildName == this.names[this.index]) {
+      if (b.bildName == this.annotations[this.index].bildName) {
         let box: CSVRecord;
         box = new CSVRecord();
 
@@ -229,6 +270,8 @@ export class CanvasForFoodComponent implements OnInit {
         this.boundingBoxes[this.boundingBoxes.length - 1].y1 = b.y1;
         this.boundingBoxes[this.boundingBoxes.length - 1].x2 = b.x2;
         this.boundingBoxes[this.boundingBoxes.length - 1].y2 = b.y2;
+        this.boundingBoxes[this.boundingBoxes.length - 1].width = b.width;
+        this.boundingBoxes[this.boundingBoxes.length - 1].height = b.height;
 
       }
     });
@@ -241,6 +284,8 @@ export class CanvasForFoodComponent implements OnInit {
     this.image.onload = () => {
       this.imgWidth = this.image.width;
       this.imgHeight = this.image.height;
+      this.annotations[this.index].height = this.imgHeight;
+      this.annotations[this.index].width = this.imgWidth;
       this.displayImgWidth = this.imgWidth;
       this.displayImgHeight = this.imgHeight;
       this.scaleFactor = 1.0;
@@ -273,12 +318,14 @@ export class CanvasForFoodComponent implements OnInit {
   }
 
   addBoxesToAnnotations() {
+    let bool = false;
 
-    console.log(this.records.length);
+    console.log("länge: " + this.annotations.length);
     for (let i = 0; i < this.annotations.length; i++) {
       this.records.forEach(b => {
-        console.log(b.bildName +"=="+ this.annotations[i].bildName);
         if (b.bildName == this.annotations[i].bildName) {
+          bool = true;
+
           let box: BoundingBox;
           box = new BoundingBox();
 
@@ -288,12 +335,65 @@ export class CanvasForFoodComponent implements OnInit {
           box.x2 = b.x2;
           box.y2 = b.y2;
 
-          this.annotations[i].boxes.push(box);
-          console.log(this.annotations[i].bildName + " " + this.annotations[i].boxes[0].essen);
+          this.annotations[i].height = b.height;
+          this.annotations[i].width = b.width;
 
+          this.annotations[i].boxes.push(box);
         }
       });
-    }  
+      if (bool) {
+        this.addTagsForMLKIT(this.annotations[i]);
+        this.annotations[i].added = true;
+        bool = false;
+      }
+    }
+    this.tagList.forEach(t => {
+      console.log(t.tagName + " bild: " + t.bilder.length);
+    });
+  }
+
+  addTagsForMLKIT(a: Annotation) {
+
+    let tagCount = 10000;
+    let tag = "";
+    let bo = false;
+
+    let tagObject: Tag;
+
+    a.boxes.forEach(b => {
+      this.tagList.forEach(t => {
+        if (t.tagName == b.essen) {
+          bo = true;
+          if (t.bilder.length <= tagCount) {
+            tagCount = t.bilder.length;
+            tag = b.essen;
+          }
+        }
+      });
+      if (!bo) {
+        tagObject = new Tag();
+
+        tagObject.bilder = [];
+        tagObject.tagName = b.essen;
+        tagObject.test = 0;
+        tagObject.validate = 0;
+        tagObject.train = 0;
+        tagObject.count = 0;
+
+        tag = b.essen;
+
+        this.tagList.push(tagObject);
+      }
+    });
+
+    if (!a.added) {
+      this.tagList.forEach(t => {
+        if (t.tagName == tag) {
+          console.log("added image to: " + t.tagName + " image: " + a.bildName);
+          t.bilder.push(a.bildName);
+        }
+      });
+    }
   }
 
   uploadListenerCSV(event) {
@@ -323,6 +423,8 @@ export class CanvasForFoodComponent implements OnInit {
         csvRecord.x2 = parseInt(curruntRecord[3].trim());  
         csvRecord.y2 = parseInt(curruntRecord[4].trim());  
         csvRecord.essen = curruntRecord[5].trim();
+        csvRecord.height = parseInt(curruntRecord[6].trim());
+        csvRecord.width = parseInt(curruntRecord[7].trim());
         csvArr.push(csvRecord);  
       }  
     }  
@@ -330,7 +432,6 @@ export class CanvasForFoodComponent implements OnInit {
   }
 
   save() {
-
     this.getCSVfromAnnotation();
     this.exportToCsv("test.csv", this.newBoxes);
   }
@@ -339,8 +440,6 @@ export class CanvasForFoodComponent implements OnInit {
     this.newBoxes = [];
     this.annotations.forEach(b => {
       b.boxes.forEach(bo => {
-
-        console.log("name: " + b.bildName + " essen: " + bo.essen);
 
         let box: CSVRecord;
         box = new CSVRecord();
@@ -351,6 +450,8 @@ export class CanvasForFoodComponent implements OnInit {
         box.x2 = bo.x2;
         box.y2 = bo.y2;
         box.essen = bo.essen;
+        box.height = b.height;
+        box.width = b.width;
 
         this.newBoxes.push(box);
       });
@@ -363,36 +464,63 @@ export class CanvasForFoodComponent implements OnInit {
   }
 
   getCSVforMLKITfromAnnotation(){
+
     this.csvMLkitBoxes = [];
-    this.annotations.forEach(b => {
-      b.boxes.forEach(bo => {
-        let box: CSVRecordMLKIT;
-        box = new CSVRecordMLKIT();
+    this.tagList.forEach(t => {
+      this.annotations.forEach(b => {
 
-        box.purpose = "TRAIN";
-        box.bildName = "gs://folderfoodown/" + b.bildName;
+        if (t.bilder[t.count] == b.bildName) {
+          t.count++;
 
-        box.essen = bo.essen;
-        box.x1 = (bo.x1 / this.imgWidth);
-        box.y1 = (bo.y1 / this.imgHeight);
-        box.e1 = "";
-        box.e2 = "";
-        box.x2 = (bo.x2 / this.imgWidth);
-        box.y2 = (bo.y2 / this.imgHeight);
-        box.e3 = "";
-        box.e4 = "";
-  
-        if (box.x1 < 0) box.x1 = 0;
-        if (box.x1 > 1) box.x1 = 1;
-        if (box.y1 < 0) box.y1 = 0;
-        if (box.y1 > 1) box.y1 = 1;
-        if (box.x2 < 0) box.x2 = 0;
-        if (box.x2 > 1) box.x2 = 1;
-        if (box.y2 < 0) box.y2 = 0;
-        if (box.y2 > 1) box.y2 = 1;
-        this.csvMLkitBoxes.push(box);
+          b.boxes.forEach(bo => {
+            //if (bo.essen == t.tagName) { //Reihenfolge könnte wichtig sein wegen test, validate und train bilder
+              let box: CSVRecordMLKIT;
+              box = new CSVRecordMLKIT();
+      
+              box.purpose = this.getPurpose(t);
+              box.bildName = "gs://folderfoodown/" + b.bildName;
+      
+              box.essen = bo.essen;
+              box.x1 = (bo.x1 / b.width);
+              box.y1 = (bo.y1 / b.height);
+              box.e1 = "";
+              box.e2 = "";
+              box.x2 = (bo.x2 / b.width);
+              box.y2 = (bo.y2 / b.height);
+              box.e3 = "" + b.height;
+              box.e4 = "" + b.width;
+        
+              /*if (box.x1 < 0) box.x1 = 0;
+              if (box.x1 > 1) box.x1 = 1;
+              if (box.y1 < 0) box.y1 = 0;
+              if (box.y1 > 1) box.y1 = 1;
+              if (box.x2 < 0) box.x2 = 0;
+              if (box.x2 > 1) box.x2 = 1;
+              if (box.y2 < 0) box.y2 = 0;
+              if (box.y2 > 1) box.y2 = 1;*/
+              this.csvMLkitBoxes.push(box);
+            //}
+          });
+        }
       });
     });
+  }
+
+  getPurpose(t: Tag) {
+    let purp = "";
+
+    if (t.test < 0.1*t.bilder.length && t.validate >= t.test) {
+      t.test++;
+      purp = "TEST";
+    } else if(t.validate < 0.1*t.bilder.length) {
+      t.validate++;
+      purp = "VALIDATE";
+    } else {
+      t.train++;
+      purp = "TRAIN";
+    }
+
+    return purp;
   }
 
   //###################################################################################
