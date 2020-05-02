@@ -47,7 +47,7 @@ export class CanvasForFoodComponent implements OnInit {
   public newBoxes: any[] = [];
   public csvMLkitBoxes: any[] = [];
   public images: string[] = [];
-  public snaps: any[] = [];
+  public snaps: AngularFireUploadTask[] = [];
   public names: string[] = [];
   public tags: string[] = [];
   public annotations: Annotation[] = [];
@@ -55,6 +55,7 @@ export class CanvasForFoodComponent implements OnInit {
 
   public blob: Blob;
 
+  public uploadedFiles = 0;
   public uploadProgress = 0;
   public totalUploadFiles = 0;
 
@@ -151,27 +152,28 @@ export class CanvasForFoodComponent implements OnInit {
   }
 
   async upload(event) {
-    this.uploadProgress = 0;
+    this.uploadedFiles = 0;
     this.totalUploadFiles = event.target.files.length;
     for (var i = 0; i < event.target.files.length; i++) {
       const path = "/dataset/" + this.subfolder + "/images/" + event.target.files[i].name;
       const ref = this.afStorage.ref(path);
       this.snaps[i] = this.afStorage.upload(path, event.target.files[i]);
-      this.snaps[i].snapshotChanges()
-      .pipe(
+      let url = (await this.snaps[i].snapshotChanges().toPromise()).downloadURL;
+      this.uploadedFiles++;
+      /*this.snaps[i].snapshotChanges().pipe(
         finalize(() => {
-          const url = ref.getDownloadURL();
+          const url = ref.getDownloadURL()
           url.subscribe(url => {
             if (url) {
-              this.uploadProgress++;
-              if (this.uploadProgress == this.totalUploadFiles) {
+              this.uploadedFiles++;
+              if (this.uploadedFiles == this.totalUploadFiles) {
                 this.loadImagesFromStorage();
               }
             }
           });
         })
-      )
-      .subscribe(url => {});
+      ).subscribe(url => {});*/
+      
     }
   }
 
