@@ -9,8 +9,8 @@
     <button mat-flat-button color="primary" type="button" class="btn" (click)="save()">Fertig (CSV herunterladen)</button>
     <button mat-flat-button color="primary" type="button" class="btn" (click)="saveForMLkit()">Exportieren (für ML Kit)</button>
     <button mat-flat-button color="primary" type="button" class="btn" (click)="addBoxesToAnnotations()">Laden der CSV-Daten</button>
-    <!--button mat-flat-button color="primary" type="button" class="btn" (click)="downLoadImagesByURL()">Runterladen der Bilder URL</button>
-    <button mat-flat-button color="primary" type="button" class="btn" (click)="loadImageSize()">Laden der Bildergröße</button-->
+    <button mat-flat-button color="primary" type="button" class="btn" (click)="checkAndDelete()">Bilder Löschen und CSV ML KIT erstellen</button>
+    <!--button mat-flat-button color="primary" type="button" class="btn" (click)="loadImageSize()">Laden der Bildergröße</button-->
     <button mat-flat-button color="primary" type="button" class="btn" (click)="showAnnotations()">NOT WORKING YET (Download CSV Firebase)</button>
   </div>
 </div>
@@ -62,6 +62,10 @@
   <div class="row justify-content-md-center mb-4">
     <label for="file">CSV-Datei hochladen (von lokalen Dateien)</label>
     <input type="file" #csvReader name="CSV hochladen" id="txtFileUpload" (change)="uploadListenerCSV($event)" accept=".csv" />
+  </div>
+  <div class="row justify-content-md-center mb-4">
+    <label for="file">CSV-Datei ML KIT hochladen (von lokalen Dateien)</label>
+    <input type="file" #csvReader name="CSV hochladen" id="txtFileUpload" (change)="uploadCSVfromMLKIT($event)" accept=".csv" />
   </div>
   
   <div class="row justify-content-md-center mb-4" style="display: none;">

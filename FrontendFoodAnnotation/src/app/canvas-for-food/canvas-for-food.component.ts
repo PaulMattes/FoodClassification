@@ -18,6 +18,7 @@ import { Annotation } from '../annotaton';
 import { BoundingBox } from '../bounding-box';
 import { CsvService } from '../csv.service';
 import { Tag } from '../tag';
+import { Csvmlkit } from '../csvmlkit';
 
 @Component({
   selector: 'app-canvas-for-food',
@@ -43,6 +44,7 @@ export class CanvasForFoodComponent implements OnInit {
   public scaleFactor = 1.0;
 
   public records: any[] = [];
+  public csvFromMLKIT: any[] = [];
   public boundingBoxes: any[] = [];
   public newBoxes: any[] = [];
   public csvMLkitBoxes: any[] = [];
@@ -132,6 +134,40 @@ export class CanvasForFoodComponent implements OnInit {
     });
   }
 
+  uploadCSVfromMLKIT(event) {
+    
+    let input = event.target;  
+    let reader = new FileReader();  
+    reader.readAsText(input.files[0]);  
+
+    reader.onload = () => {  
+      let csvData = reader.result;  
+      let csvRecordsArray = (<string>csvData).split(/\r\n|\n/);  
+
+      this.csvFromMLKIT = this.getDataFromCSVMLKIT(csvRecordsArray, 11);
+    }; 
+  }
+
+  getDataFromCSVMLKIT(csvRecordsArray: any, headerLength: number) {
+    let csvArr = [];  
+  
+    for (let i = 1; i < csvRecordsArray.length; i++) {  
+      let curruntRecord = (<string>csvRecordsArray[i]).split(',');  
+      if (curruntRecord.length == headerLength) {  
+        let csvMLkit: Csvmlkit = new Csvmlkit();
+        csvMLkit.bildName = curruntRecord[1].trim().replace("gs://folderfoodown/", "");
+        csvMLkit.essen = curruntRecord[2].trim();
+        csvMLkit.x1 = parseFloat(curruntRecord[3].trim());  
+        csvMLkit.y1 = parseFloat(curruntRecord[4].trim());  
+        csvMLkit.x2 = parseFloat(curruntRecord[7].trim());  
+        csvMLkit.y2 = parseFloat(curruntRecord[8].trim());
+        csvArr.push(csvMLkit);  
+      }  
+    }  
+    console.log("Länge: " + csvArr.length);
+    return csvArr;   
+  }
+
   uploadListenerCSVfromMLKIT(path: string) {
     let file: File;
 
@@ -175,6 +211,27 @@ export class CanvasForFoodComponent implements OnInit {
       ).subscribe(url => {});*/
       
     }
+  }
+
+  async checkAndDelete() {
+    let bool = false;
+    let count = 0;
+    let name = "";
+
+    this.names.forEach(async n => {
+      this.csvFromMLKIT.forEach(c =>{
+        if (c.bildName == n) {
+          bool = true;
+        }
+      });
+      if (!bool) {
+        await this.afStorage.ref("/dataset/" + this.subfolder + "/images/" + n).delete();
+        count++;
+      }
+      bool = false;
+    });
+    console.log("anzahl: " + count);
+    this.saveForMLkitFromMLkit();
   }
 
   async download(name: string) {
@@ -286,8 +343,9 @@ export class CanvasForFoodComponent implements OnInit {
     this.image.onload = () => {
       this.imgWidth = this.image.width;
       this.imgHeight = this.image.height;
-      this.annotations[this.index].height = this.imgHeight;
-      this.annotations[this.index].width = this.imgWidth;
+      console.log("breite: " + this.imgWidth + " höhe: " + this.imgHeight);
+      this.annotations[this.index - 1].height = this.imgHeight;
+      this.annotations[this.index - 1].width = this.imgWidth;
       this.displayImgWidth = this.imgWidth;
       this.displayImgHeight = this.imgHeight;
       this.scaleFactor = 1.0;
@@ -322,7 +380,7 @@ export class CanvasForFoodComponent implements OnInit {
   addBoxesToAnnotations() {
     let bool = false;
 
-    console.log("länge: " + this.annotations.length);
+    console.log("länge: " + this.annotations.length + " Länge von csv: " + this.records.length);
     for (let i = 0; i < this.annotations.length; i++) {
       this.records.forEach(b => {
         if (b.bildName == this.annotations[i].bildName) {
@@ -408,7 +466,7 @@ export class CanvasForFoodComponent implements OnInit {
       let csvData = reader.result;  
       let csvRecordsArray = (<string>csvData).split(/\r\n|\n/);  
 
-      this.records = this.getDataRecordsArrayFromCSVFile(csvRecordsArray, 6);
+      this.records = this.getDataRecordsArrayFromCSVFile(csvRecordsArray, 8);
     }; 
   }
 
@@ -489,8 +547,8 @@ export class CanvasForFoodComponent implements OnInit {
               box.e2 = "";
               box.x2 = (bo.x2 / b.width);
               box.y2 = (bo.y2 / b.height);
-              box.e3 = "" + b.height;
-              box.e4 = "" + b.width;
+              box.e3 = "";
+              box.e4 = "";
         
               /*if (box.x1 < 0) box.x1 = 0;
               if (box.x1 > 1) box.x1 = 1;
@@ -505,6 +563,37 @@ export class CanvasForFoodComponent implements OnInit {
           });
         }
       });
+    });
+  }
+
+  saveForMLkitFromMLkit() {
+    this.getFileForMLkit();
+    this.exportToCsv("mlKitCSVfromMLKIT.csv", this.csvMLkitBoxes);
+  }
+
+  getFileForMLkit(){
+
+    this.csvMLkitBoxes = [];
+    
+    this.csvFromMLKIT.forEach(c => {
+      let box: CSVRecordMLKIT;
+      box = new CSVRecordMLKIT();
+
+      box.purpose = "";
+      box.bildName = "gs://folderfoodown/" + c.bildName;
+
+      box.essen = c.essen;
+      box.x1 = c.x1;
+      box.y1 = c.y1;
+      box.e1 = "";
+      box.e2 = "";
+      box.x2 = c.x2;
+      box.y2 = c.y2;
+      box.e3 = "";
+      box.e4 = "";
+
+
+      this.csvMLkitBoxes.push(box);
     });
   }
 
