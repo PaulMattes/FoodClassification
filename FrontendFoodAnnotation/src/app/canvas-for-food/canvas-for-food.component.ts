@@ -102,12 +102,21 @@ export class CanvasForFoodComponent implements OnInit {
     //this.loadImagesFromStorage();
   }
 
-  loadImagesFromStorage() {
+  ngAfterViewInit() {
+      this.contentHeight = this.div1.nativeElement.offsetHeight;
+  }
+
+  /*#########################################################################################################
+  BILDER LADEN PLUS DOWNLOADS
+  #########################################################################################################*/
+
+  //Funktion wird aufgerufen, wenn der "Bilder laden" Button gedrückt wird
+  async loadImagesFromStorage() {
     this.index = 0;
     this.names = [];
     this.fileList = [];
     this.afStorage.ref("/dataset/" + this.subfolder + "/images").listAll().subscribe(n => {
-      n.items.forEach(b => {
+      n.items.forEach(async b => {
         this.names.push(b.name);
 
         let a: Annotation;
@@ -124,16 +133,47 @@ export class CanvasForFoodComponent implements OnInit {
     });
   }
 
-  ngAfterViewInit() {
-    this.contentHeight = this.div1.nativeElement.offsetHeight;
+  //Lädt ein Bild herunter und speichert den Path in filePath
+  async download(name: string) {
+    this.afStorage.ref("/dataset/" + this.subfolder + "/images/" + name).getDownloadURL().subscribe(d => {
+      this.filePath = d;
+    });
   }
 
+  //Lädt die CSV-Datei direkt von Firebase herunter
   downloadCSVfromMLKIT() {
     this.afStorage.ref("/dataset/" + this.subfolder + "/tmp.csv").getDownloadURL().subscribe(d => {
       this.uploadListenerCSVfromMLKIT(d);
     });
   }
 
+  //sollte alle Bilder laden und die URLs abspeichern
+  async downLoadImagesByURL() {
+    let i = 0;
+    console.log("Länge von names: " + this.annotations.length);
+    for (var j = 0; j < this.annotations.length; j++){
+      let url = await this.afStorage.ref("/dataset/" + this.subfolder + "/images/" + this.annotations[j].bildName).getDownloadURL().toPromise();
+      console.log("i ist: " + j + " name: " + this.annotations[j].bildName + " url: " + url);
+    }
+  }
+
+  /*#########################################################################################################
+  UPLOAD VON DATEN
+  #########################################################################################################*/
+
+  //nimmt Bilder vom lokalen PC entgegen - deprecated
+  handleFiles(event) {
+    if (event.target.files && event.target.files[0]) {
+
+      this.fileList = [];
+
+      for(var i = 0; i < event.target.files.length; i++) {
+        this.fileList.push(event.target.files[i]);   
+      }
+    }  
+  }
+
+  //nimmt CSV-Datei entgegen, welche von ML KIT erzeugt wurde
   uploadCSVfromMLKIT(event) {
     
     let input = event.target;  
@@ -148,6 +188,7 @@ export class CanvasForFoodComponent implements OnInit {
     }; 
   }
 
+  //gehört zu uploadCSVfromMLKIT
   getDataFromCSVMLKIT(csvRecordsArray: any, headerLength: number) {
     let csvArr = [];  
   
@@ -168,6 +209,7 @@ export class CanvasForFoodComponent implements OnInit {
     return csvArr;   
   }
 
+  //sollte CSV-Datei direkt von Firebase laden (geht noch nicht!)
   uploadListenerCSVfromMLKIT(path: string) {
     let file: File;
 
@@ -187,6 +229,7 @@ export class CanvasForFoodComponent implements OnInit {
     };
   }
 
+  //Hochladen von Bildern auf den Firebase Storage
   async upload(event) {
     this.uploadedFiles = 0;
     this.totalUploadFiles = event.target.files.length;
@@ -213,6 +256,48 @@ export class CanvasForFoodComponent implements OnInit {
     }
   }
 
+  //nimmt CSV-Datei vom lokalen PC entgegen
+  uploadListenerCSV(event) {
+    
+    let input = event.target;  
+    let reader = new FileReader();  
+    reader.readAsText(input.files[0]);  
+
+    reader.onload = () => {  
+      let csvData = reader.result;  
+      let csvRecordsArray = (<string>csvData).split(/\r\n|\n/);  
+
+      this.records = this.getDataRecordsArrayFromCSVFile(csvRecordsArray, 8);
+    }; 
+  }
+
+  //gehört zu uploadListenerCSV
+  getDataRecordsArrayFromCSVFile(csvRecordsArray: any, headerLength: number) {
+    let csvArr = [];  
+  
+    for (let i = 1; i < csvRecordsArray.length; i++) {  
+      let curruntRecord = (<string>csvRecordsArray[i]).split(',');  
+      if (curruntRecord.length == headerLength) {  
+        let csvRecord: CSVRecord = new CSVRecord();  
+        csvRecord.bildName = curruntRecord[0].trim();
+        csvRecord.x1 = parseInt(curruntRecord[1].trim());  
+        csvRecord.y1 = parseInt(curruntRecord[2].trim());  
+        csvRecord.x2 = parseInt(curruntRecord[3].trim());  
+        csvRecord.y2 = parseInt(curruntRecord[4].trim());  
+        csvRecord.essen = curruntRecord[5].trim();
+        csvRecord.height = parseInt(curruntRecord[6].trim());
+        csvRecord.width = parseInt(curruntRecord[7].trim());
+        csvArr.push(csvRecord);  
+      }  
+    }  
+    return csvArr;   
+  }
+
+  /*#########################################################################################################
+  METHODEN ZUR VERARBEITUNG DER GELADENEN BILDER/DATEIEN
+  #########################################################################################################*/
+
+  //nimmt die geladene CSV-Datei von ML KIT und löscht alle Bilder auf Firebase, welche nicht in der Datei vorkommen
   async checkAndDelete() {
     let bool = false;
     let count = 0;
@@ -234,34 +319,14 @@ export class CanvasForFoodComponent implements OnInit {
     this.saveForMLkitFromMLkit();
   }
 
-  async download(name: string) {
-    this.afStorage.ref("/dataset/" + this.subfolder + "/images/" + name).getDownloadURL().subscribe(d => {
-      this.filePath = d;
-    });
-  }
-
-  async downLoadImagesByURL() {
-    let i = 0;
-
-    console.log("Länge von names: " + this.names.length);
-    this.names.forEach(n => {
-      this.afStorage.ref("/dataset/" + this.subfolder + "/images/" + n).getDownloadURL().subscribe(d => {
-        this.annotations.forEach(a => {
-          if (a.bildName == n) {
-            this.annotations[i].filePath = d;
-          }
-        })
-        i++;
-      });
-    });
-  }
-
+  //Output Methode, welche Bildnamen plus Breite und Höhe ausgibt
   showAnnotations() {
     this.annotations.forEach(a => {
       console.log("bildName: " + a.bildName + " width: " + a.width + " height: " + a.height);
     });
   }
 
+  //Methode welche die Bildergröße laden sollte (geht noch nicht)
   async loadImageSize() {
     for(var i = 0; i < this.annotations.length - 1; i++) {
       this.image = new Image();
@@ -272,111 +337,7 @@ export class CanvasForFoodComponent implements OnInit {
     }
   }
 
-  handleFiles(event) {
-    if (event.target.files && event.target.files[0]) {
-
-      this.fileList = [];
-
-      for(var i = 0; i < event.target.files.length; i++) {
-        this.fileList.push(event.target.files[i]);   
-      }
-    }  
-  }
-
-  saveBoundingBoxes() {
-
-    this.annotations[this.index - 1].boxes = [];
-
-    this.boundingBoxes.forEach(b => {
-      let box: BoundingBox;
-      box = new BoundingBox();
-
-      box.x1 = b.x1;
-      box.y1 = b.y1;
-      box.x2 = b.x2;
-      box.y2 = b.y2;
-      box.essen = b.essen;
-      //this.annotations[this.index - 1].height = b.height;
-      //this.annotations[this.index - 1].width = b.width;
-      
-      this.annotations[this.index - 1].boxes.push(box);
-    });
-
-    this.addTagsForMLKIT(this.annotations[this.index - 1]);
-    this.annotations[this.index - 1].added = true;
-  }
-
-  nextImage() {
-
-    this.indexText = "" + this.index;
-    
-    if (!(this.firstImage)){
-      this.saveBoundingBoxes();
-    }
-
-    this.boundingBoxes = [];
-
-    this.records.forEach(b => {
-      if (b.bildName == this.annotations[this.index].bildName) {
-        let box: CSVRecord;
-        box = new CSVRecord();
-
-        this.boundingBoxes.push(box);
-
-        this.boundingBoxes[this.boundingBoxes.length - 1].bildName = b.bildName;
-        this.boundingBoxes[this.boundingBoxes.length - 1].essen = b.essen;
-        this.boundingBoxes[this.boundingBoxes.length - 1].x1 = b.x1;
-        this.boundingBoxes[this.boundingBoxes.length - 1].y1 = b.y1;
-        this.boundingBoxes[this.boundingBoxes.length - 1].x2 = b.x2;
-        this.boundingBoxes[this.boundingBoxes.length - 1].y2 = b.y2;
-        this.boundingBoxes[this.boundingBoxes.length - 1].width = b.width;
-        this.boundingBoxes[this.boundingBoxes.length - 1].height = b.height;
-
-      }
-    });
-
-    //if(this.images.length != 0){
-    this.image = new Image();
-    this.name = this.names[this.index];
-    this.image.src = this.filePath;
-    this.initText = this.filePath;
-    this.image.onload = () => {
-      this.imgWidth = this.image.width;
-      this.imgHeight = this.image.height;
-      console.log("breite: " + this.imgWidth + " höhe: " + this.imgHeight);
-      this.annotations[this.index - 1].height = this.imgHeight;
-      this.annotations[this.index - 1].width = this.imgWidth;
-      this.displayImgWidth = this.imgWidth;
-      this.displayImgHeight = this.imgHeight;
-      this.scaleFactor = 1.0;
-      while (this.displayImgWidth > 1000 || this.displayImgHeight > 1000) {
-        this.displayImgWidth = this.displayImgWidth / 2;
-        this.displayImgHeight = this.displayImgHeight / 2;
-        this.scaleFactor = this.scaleFactor / 2;
-      }
-      this.showImage();
-      if (this.firstImage) {
-        this.firstImage = false;
-      }
-    };
-
-    //this.autoSaveBoundingBoxes();
-    this.index++;
-
-    this.download(this.names[this.index]);
-    //}
-  }
-
-  previousImage() {
-    this.index = this.index - 2;
-    this.nextImage();
-  }
-
-  toStart() {
-    this.index = 0;
-    this.nextImage();
-  }
-
+  //Methode welche die bestehenden Bounding Boxen aus einer CSV-Datei zu der Annoationliste hinzufügen
   addBoxesToAnnotations() {
     let bool = false;
 
@@ -412,6 +373,7 @@ export class CanvasForFoodComponent implements OnInit {
     });
   }
 
+  //Methode, welche neue Annotationen hinzufügt
   addTagsForMLKIT(a: Annotation) {
 
     let tagCount = 10000;
@@ -456,46 +418,115 @@ export class CanvasForFoodComponent implements OnInit {
     }
   }
 
-  uploadListenerCSV(event) {
+  /*#########################################################################################################
+  NÄCHSTES BILD AUFRUFEN + DAZUGEHÖRIGE METHODEN
+  #########################################################################################################*/
+
+  //Speichert Bounding Boxen in Annotation zurück
+  saveBoundingBoxes() {
+
+    this.annotations[this.index - 1].boxes = [];
+
+    this.boundingBoxes.forEach(b => {
+      let box: BoundingBox;
+      box = new BoundingBox();
+
+      box.x1 = b.x1;
+      box.y1 = b.y1;
+      box.x2 = b.x2;
+      box.y2 = b.y2;
+      box.essen = b.essen;
+      
+      this.annotations[this.index - 1].boxes.push(box);
+    });
+
+    this.addTagsForMLKIT(this.annotations[this.index - 1]);
+    this.annotations[this.index - 1].added = true;
+  }
+
+  //Wird aufgerufen, wenn der Button "nächstes Bild" gedürckt wird; Sichert die Bounding Boxen, wenn es nicht das erste Bild ist und schaut, ob es neue Bounding Boxen für das nächste Bild gibt
+  nextImage() {
+
+    this.indexText = "" + this.index;
     
-    let input = event.target;  
-    let reader = new FileReader();  
-    reader.readAsText(input.files[0]);  
+    if (!(this.firstImage)){
+      this.saveBoundingBoxes();
+    }
 
-    reader.onload = () => {  
-      let csvData = reader.result;  
-      let csvRecordsArray = (<string>csvData).split(/\r\n|\n/);  
+    this.boundingBoxes = [];
 
-      this.records = this.getDataRecordsArrayFromCSVFile(csvRecordsArray, 8);
-    }; 
+    this.records.forEach(b => {
+      if (b.bildName == this.annotations[this.index].bildName) {
+        let box: CSVRecord;
+        box = new CSVRecord();
+
+        this.boundingBoxes.push(box);
+
+        this.boundingBoxes[this.boundingBoxes.length - 1].bildName = b.bildName;
+        this.boundingBoxes[this.boundingBoxes.length - 1].essen = b.essen;
+        this.boundingBoxes[this.boundingBoxes.length - 1].x1 = b.x1;
+        this.boundingBoxes[this.boundingBoxes.length - 1].y1 = b.y1;
+        this.boundingBoxes[this.boundingBoxes.length - 1].x2 = b.x2;
+        this.boundingBoxes[this.boundingBoxes.length - 1].y2 = b.y2;
+        this.boundingBoxes[this.boundingBoxes.length - 1].width = b.width;
+        this.boundingBoxes[this.boundingBoxes.length - 1].height = b.height;
+
+      }
+    });
+
+    this.image = new Image();
+    this.name = this.names[this.index];
+    this.image.src = this.filePath;
+    this.initText = this.filePath;
+    this.image.onload = () => {
+      this.imgWidth = this.image.width;
+      this.imgHeight = this.image.height;
+      console.log("breite: " + this.imgWidth + " höhe: " + this.imgHeight);
+      this.annotations[this.index - 1].height = this.imgHeight;
+      this.annotations[this.index - 1].width = this.imgWidth;
+      this.displayImgWidth = this.imgWidth;
+      this.displayImgHeight = this.imgHeight;
+      this.scaleFactor = 1.0;
+      while (this.displayImgWidth > 1000 || this.displayImgHeight > 1000) {
+        this.displayImgWidth = this.displayImgWidth / 2;
+        this.displayImgHeight = this.displayImgHeight / 2;
+        this.scaleFactor = this.scaleFactor / 2;
+      }
+      this.showImage();
+      if (this.firstImage) {
+        this.firstImage = false;
+      }
+    };
+
+    //this.autoSaveBoundingBoxes();
+    this.index++;
+
+    this.download(this.names[this.index]);
   }
 
-  getDataRecordsArrayFromCSVFile(csvRecordsArray: any, headerLength: number) {
-    let csvArr = [];  
+  //vorheriges Bild
+  previousImage() {
+    this.index = this.index - 2;
+    this.nextImage();
+  }
+
+  //wieder zum Anfang der Bilder
+  toStart() {
+    this.index = 0;
+    this.nextImage();
+  }
+
+  /*#########################################################################################################
+  NÄCHSTES BILD AUFRUFEN + DAZUGEHÖRIGE METHODEN
+  #########################################################################################################*/
   
-    for (let i = 1; i < csvRecordsArray.length; i++) {  
-      let curruntRecord = (<string>csvRecordsArray[i]).split(',');  
-      if (curruntRecord.length == headerLength) {  
-        let csvRecord: CSVRecord = new CSVRecord();  
-        csvRecord.bildName = curruntRecord[0].trim();
-        csvRecord.x1 = parseInt(curruntRecord[1].trim());  
-        csvRecord.y1 = parseInt(curruntRecord[2].trim());  
-        csvRecord.x2 = parseInt(curruntRecord[3].trim());  
-        csvRecord.y2 = parseInt(curruntRecord[4].trim());  
-        csvRecord.essen = curruntRecord[5].trim();
-        csvRecord.height = parseInt(curruntRecord[6].trim());
-        csvRecord.width = parseInt(curruntRecord[7].trim());
-        csvArr.push(csvRecord);  
-      }  
-    }  
-    return csvArr;   
-  }
-
+  //CSV-Datei in unserem Format erstellen und als "test.csv" speichern
   save() {
     this.getCSVfromAnnotation();
     this.exportToCsv("test.csv", this.newBoxes);
   }
 
+  //holt die Infos für die CSV-Datei aus der Annotationliste
   getCSVfromAnnotation(){
     this.newBoxes = [];
     this.annotations.forEach(b => {
@@ -518,11 +549,13 @@ export class CanvasForFoodComponent implements OnInit {
     });
   }
 
+  //Erstellen einer CSV-Datei, welche in ML KIT benutzt werden kann
   saveForMLkit() {
     this.getCSVforMLKITfromAnnotation();
     this.exportToCsv("mlKitCSV.csv", this.csvMLkitBoxes);
   }
 
+  //Holt Infos die gebraucht werden, um die CSV-Datei für ML KIT zu erstellen
   getCSVforMLKITfromAnnotation(){
 
     this.csvMLkitBoxes = [];
@@ -566,11 +599,31 @@ export class CanvasForFoodComponent implements OnInit {
     });
   }
 
+  //schaut welchen Purpose das Bild in ML KIT haben sollte
+  getPurpose(t: Tag) {
+    let purp = "";
+
+    if (t.test < 0.1*t.bilder.length && t.validate >= t.test) {
+      t.test++;
+      purp = "TEST";
+    } else if(t.validate < 0.1*t.bilder.length) {
+      t.validate++;
+      purp = "VALIDATE";
+    } else {
+      t.train++;
+      purp = "TRAIN";
+    }
+
+    return purp;
+  }
+
+  //speichert eine CSV-Datei welche vom Format ML KIT ist und auch aus dieser kommt
   saveForMLkitFromMLkit() {
     this.getFileForMLkit();
     this.exportToCsv("mlKitCSVfromMLKIT.csv", this.csvMLkitBoxes);
   }
 
+  //holt sich die Infos von der CSV ML KIT Datei und speichert diese in eine neue
   getFileForMLkit(){
 
     this.csvMLkitBoxes = [];
@@ -597,24 +650,8 @@ export class CanvasForFoodComponent implements OnInit {
     });
   }
 
-  getPurpose(t: Tag) {
-    let purp = "";
-
-    if (t.test < 0.1*t.bilder.length && t.validate >= t.test) {
-      t.test++;
-      purp = "TEST";
-    } else if(t.validate < 0.1*t.bilder.length) {
-      t.validate++;
-      purp = "VALIDATE";
-    } else {
-      t.train++;
-      purp = "TRAIN";
-    }
-
-    return purp;
-  }
-
   //###################################################################################
+  //METHODEN FÜR BILDANZEIGE UND TAGS UND SPEICHERN VON CSV DATEIEN JEGLICHEN FORMATS
   //###################################################################################
 
   showImage() {
