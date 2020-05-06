@@ -70,6 +70,7 @@ export class CanvasForFoodComponent implements OnInit {
 
   public drag = false;
   public firstImage = true;
+  public boolForMLKIT = true;
 
   public contentHeight: number;
 
@@ -363,7 +364,7 @@ export class CanvasForFoodComponent implements OnInit {
   }
 
   //Methode welche die bestehenden Bounding Boxen aus einer CSV-Datei zu der Annoationliste hinzufügen
-  addBoxesToAnnotations() {
+  addBoxesToAnnotationsMLKIT() {
     let bool = false;
 
     for (let i = 0; i < this.annotations.length; i++) {
@@ -397,9 +398,11 @@ export class CanvasForFoodComponent implements OnInit {
     });
   }
 
-  /*Methode welche die bestehenden Bounding Boxen aus einer CSV-Datei zu der Annoationliste hinzufügen
+  //Methode welche die bestehenden Bounding Boxen aus einer CSV-Datei zu der Annoationliste hinzufügen
   addBoxesToAnnotations() {
     let bool = false;
+
+    this.boolForMLKIT = false;
 
     console.log("länge: " + this.annotations.length + " Länge von csv: " + this.records.length);
     for (let i = 0; i < this.annotations.length; i++) {
@@ -431,7 +434,7 @@ export class CanvasForFoodComponent implements OnInit {
     this.tagList.forEach(t => {
       console.log(t.tagName + " bild: " + t.bilder.length);
     });
-  }*/
+  }
 
   //Methode, welche neue Annotationen hinzufügt
   addTagsForMLKIT(a: Annotation) {
@@ -613,7 +616,12 @@ export class CanvasForFoodComponent implements OnInit {
 
   //Erstellen einer CSV-Datei, welche in ML KIT benutzt werden kann
   saveForMLkit() {
-    this.getCSVforMLKITfromAnnotation();
+    if (this.boolForMLKIT) {
+      this.getCSVforMLKITfromAnnotation();
+    } else {
+      this.getCSVforMLKITfromAnnotationFromNormalCSV();
+    }
+    
     this.exportToCsv("mlKitCSV.csv", this.csvMLkitBoxes);
   }
 
@@ -641,8 +649,8 @@ export class CanvasForFoodComponent implements OnInit {
     });
   }
 
-  /*Holt Infos die gebraucht werden, um die CSV-Datei für ML KIT zu erstellen
-  getCSVforMLKITfromAnnotation(){
+  //Holt Infos die gebraucht werden, um die CSV-Datei für ML KIT zu erstellen
+  getCSVforMLKITfromAnnotationFromNormalCSV(){
     this.csvMLkitBoxes = [];
       this.annotations.forEach(b => {
         b.boxes.forEach(bo => {
@@ -664,7 +672,7 @@ export class CanvasForFoodComponent implements OnInit {
           this.csvMLkitBoxes.push(box);
         });
     });
-  }*/
+  }
 
   //speichert eine CSV-Datei welche vom Format ML KIT ist und auch aus dieser kommt
   saveForMLkitFromMLkit() {
