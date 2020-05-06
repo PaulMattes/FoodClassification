@@ -735,7 +735,7 @@ export class CanvasForFoodComponent implements OnInit {
         let rect = parent.layer1CanvasElement.getBoundingClientRect();
 
         parent.boundingBoxes[parent.boundingBoxes.length - 1].x2 = ((e.clientX - rect.left) / parent.scaleFactor) / parent.annotations[parent.index - 1].width;
-        parent.boundingBoxes[parent.boundingBoxes.length - 1].y2 = ((e.clientX - rect.left) / parent.scaleFactor) / parent.annotations[parent.index - 1].height;
+        parent.boundingBoxes[parent.boundingBoxes.length - 1].y2 = ((e.clientY - rect.top) / parent.scaleFactor) / parent.annotations[parent.index - 1].height;
         parent.drawRect(parent.boundingBoxes[parent.boundingBoxes.length - 1]);
       });
   
@@ -745,7 +745,7 @@ export class CanvasForFoodComponent implements OnInit {
         let rect = parent.layer1CanvasElement.getBoundingClientRect();
 
         parent.boundingBoxes[parent.boundingBoxes.length - 1].x2 = ((e.clientX - rect.left) / parent.scaleFactor) / parent.annotations[parent.index - 1].width;
-        parent.boundingBoxes[parent.boundingBoxes.length - 1].y2 = ((e.clientX - rect.left) / parent.scaleFactor) / parent.annotations[parent.index - 1].height;
+        parent.boundingBoxes[parent.boundingBoxes.length - 1].y2 = ((e.clientY - rect.top) / parent.scaleFactor) / parent.annotations[parent.index - 1].height;
         parent.indexBild++;
 
         parent.redraw();
