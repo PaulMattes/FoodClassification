@@ -33,6 +33,8 @@ export class CanvasForFoodComponent implements OnInit {
   indexText = "index";
   initText = "leer";
 
+  selectedTag = "all";
+
   public subfolder = '0';
 
   public imgWidth: number;
@@ -54,6 +56,7 @@ export class CanvasForFoodComponent implements OnInit {
   public tags: string[] = [];
   public annotations: Annotation[] = [];
   public tagList: Tag[] = [];
+  public annotationsToShow: Annotation[] = [];
 
   public blob: Blob;
 
@@ -71,6 +74,7 @@ export class CanvasForFoodComponent implements OnInit {
   public drag = false;
   public firstImage = true;
   public boolForMLKIT = true;
+  public firstSave = true;
 
   public contentHeight: number;
 
@@ -108,6 +112,10 @@ export class CanvasForFoodComponent implements OnInit {
       this.contentHeight = this.div1.nativeElement.offsetHeight;
   }
 
+  printSomething() {
+    console.log("hey");
+  }
+
   /*#########################################################################################################
   BILDER LADEN PLUS DOWNLOADS
   #########################################################################################################*/
@@ -130,6 +138,7 @@ export class CanvasForFoodComponent implements OnInit {
         a.boxes = [];
 
         this.annotations.push(a);
+        this.annotationsToShow.push(a);
       });
       this.download(this.names[0]);
     });
@@ -152,7 +161,7 @@ export class CanvasForFoodComponent implements OnInit {
   //sollte alle Bilder laden und die URLs abspeichern
   async downLoadImagesByURL() {
     console.log("Länge von names: " + this.annotations.length);
-    for (var j = 0; j < this.annotations.length / 16; j++){
+    for (var j = 0; j < this.annotations.length; j++){
       let url = await this.afStorage.ref("/dataset/" + this.subfolder + "/images/" + this.annotations[j].bildName).getDownloadURL().toPromise();
 
       this.annotations[j].filePath = url;
@@ -175,7 +184,6 @@ export class CanvasForFoodComponent implements OnInit {
         let height = loadedImage.height;
         parent.annotations[parent.counterVar].width = width;
         parent.annotations[parent.counterVar].height = height;
-        console.log("width: " + parent.annotations[parent.counterVar].width + " nice width: " + width + " i is: " + parent.counterVar);
         parent.counterVar++;
       }
     }
@@ -321,6 +329,36 @@ export class CanvasForFoodComponent implements OnInit {
   METHODEN ZUR VERARBEITUNG DER GELADENEN BILDER/DATEIEN
   #########################################################################################################*/
 
+  sortImages() {
+
+    this.index = 0;
+    this.annotationsToShow = [];
+    let tagTrue = false;
+    this.firstSave = true;
+
+    this.annotations.forEach(a => {
+      tagTrue = false;
+      if (this.selectedTag == "all") {
+        this.annotationsToShow.push(a);
+      } else if (this.selectedTag == "noTag") {
+        if (a.boxes.length == 0){
+          this.annotationsToShow.push(a);
+        }
+      } else {
+        a.boxes.forEach(b => {
+          if (b.essen == this.selectedTag) {
+            tagTrue = true;
+          }
+        });
+        if (tagTrue) {
+          this.annotationsToShow.push(a);
+        }
+      }
+    });
+
+    this.download(this.annotationsToShow[0].bildName);
+  }
+
   //nimmt die geladene CSV-Datei von ML KIT und löscht alle Bilder auf Firebase, welche nicht in der Datei vorkommen
   async checkAndDelete() {
     let bool = false;
@@ -334,13 +372,11 @@ export class CanvasForFoodComponent implements OnInit {
         }
       });
       if (!bool) {
-        await this.afStorage.ref("/dataset/" + this.subfolder + "/images/" + n).delete();
         count++;
       }
       bool = false;
     });
     console.log("anzahl: " + count);
-    this.saveForMLkitFromMLkit();
   }
 
   showTags() {
@@ -358,8 +394,8 @@ export class CanvasForFoodComponent implements OnInit {
 
   //Output Methode, welche Bildnamen plus Breite und Höhe ausgibt
   showAnnotations() {
-    this.annotations.forEach(a => {
-      console.log("bildName: " + a.bildName + " width: " + a.width + " height: " + a.height);
+    this.annotationsToShow.forEach(a => {
+      console.log("bildName: " + a.bildName + " box: " + a.boxes[0].essen);
     });
   }
 
@@ -490,7 +526,11 @@ export class CanvasForFoodComponent implements OnInit {
   //Speichert Bounding Boxen in Annotation zurück
   saveBoundingBoxes() {
 
-    this.annotations[this.index - 1].boxes = [];
+    //this.annotationsToShow[this.index - 1].boxes = [];
+    let counter = 0;
+    counter = this.getIndexFromAnnotation();
+
+    this.annotations[counter].boxes = [];
 
     this.boundingBoxes.forEach(b => {
       let box: BoundingBox;
@@ -502,11 +542,23 @@ export class CanvasForFoodComponent implements OnInit {
       box.y2 = b.y2;
       box.essen = b.essen;
       
-      this.annotations[this.index - 1].boxes.push(box);
+      this.annotations[counter].boxes.push(box);
     });
 
-    this.addTagsForMLKIT(this.annotations[this.index - 1]);
-    this.annotations[this.index - 1].added = true;
+    this.addTagsForMLKIT(this.annotations[counter]);
+    this.annotations[counter].added = true;
+  }
+
+  getIndexFromAnnotation(){
+    let ind = 0;
+
+    for (var i = 0; i < this.annotations.length; i++){
+      if (this.annotations[i].bildName == this.annotationsToShow[this.index - 1].bildName) {
+        ind = i;
+      }
+    }
+
+    return ind;
   }
 
   //Wird aufgerufen, wenn der Button "nächstes Bild" gedürckt wird; Sichert die Bounding Boxen, wenn es nicht das erste Bild ist und schaut, ob es neue Bounding Boxen für das nächste Bild gibt
@@ -514,41 +566,35 @@ export class CanvasForFoodComponent implements OnInit {
 
     this.indexText = "" + this.index;
     
-    if (!(this.firstImage)){
+    if (!(this.firstSave)){
       this.saveBoundingBoxes();
     }
 
     this.boundingBoxes = [];
 
-    this.csvFromMLKIT.forEach(b => {
-      if (b.bildName == this.annotations[this.index].bildName) {
-        let box: CSVRecord;
-        box = new CSVRecord();
+    this.annotationsToShow[this.index].boxes.forEach(b => {
+      let box: CSVRecord;
+      box = new CSVRecord();
 
-        this.boundingBoxes.push(box);
+      this.boundingBoxes.push(box);
 
-        this.boundingBoxes[this.boundingBoxes.length - 1].bildName = b.bildName;
-        this.boundingBoxes[this.boundingBoxes.length - 1].essen = b.essen;
-        this.boundingBoxes[this.boundingBoxes.length - 1].x1 = b.x1;
-        this.boundingBoxes[this.boundingBoxes.length - 1].y1 = b.y1;
-        this.boundingBoxes[this.boundingBoxes.length - 1].x2 = b.x2;
-        this.boundingBoxes[this.boundingBoxes.length - 1].y2 = b.y2;
-        //this.boundingBoxes[this.boundingBoxes.length - 1].width = b.width;
-        //this.boundingBoxes[this.boundingBoxes.length - 1].height = b.height;
+      this.boundingBoxes[this.boundingBoxes.length - 1].bildName = this.annotationsToShow[this.index].bildName;
+      this.boundingBoxes[this.boundingBoxes.length - 1].essen = b.essen;
+      this.boundingBoxes[this.boundingBoxes.length - 1].x1 = b.x1;
+      this.boundingBoxes[this.boundingBoxes.length - 1].y1 = b.y1;
+      this.boundingBoxes[this.boundingBoxes.length - 1].x2 = b.x2;
+      this.boundingBoxes[this.boundingBoxes.length - 1].y2 = b.y2;
 
-      }
     });
 
     this.image = new Image();
-    this.name = this.names[this.index];
     this.image.src = this.filePath;
-    this.initText = this.filePath;
+
     this.image.onload = () => {
       this.imgWidth = this.image.width;
       this.imgHeight = this.image.height;
-      console.log("breite: " + this.imgWidth + " höhe: " + this.imgHeight);
-      this.annotations[this.index - 1].height = this.imgHeight;
-      this.annotations[this.index - 1].width = this.imgWidth;
+      this.annotationsToShow[this.index - 1].height = this.imgHeight;
+      this.annotationsToShow[this.index - 1].width = this.imgWidth;
       this.displayImgWidth = this.imgWidth;
       this.displayImgHeight = this.imgHeight;
       this.scaleFactor = 1.0;
@@ -561,12 +607,15 @@ export class CanvasForFoodComponent implements OnInit {
       if (this.firstImage) {
         this.firstImage = false;
       }
+      if (this.firstSave) {
+        this.firstSave = false;
+      }
     };
 
     //this.autoSaveBoundingBoxes();
     this.index++;
 
-    this.download(this.names[this.index]);
+    this.download(this.annotationsToShow[this.index].bildName);
   }
 
   //vorheriges Bild
@@ -729,9 +778,9 @@ export class CanvasForFoodComponent implements OnInit {
 
         let rect = parent.layer1CanvasElement.getBoundingClientRect();
 
-        parent.boundingBoxes[parent.boundingBoxes.length - 1].x1 = ((e.clientX - rect.left) / parent.scaleFactor) / parent.annotations[parent.index - 1].width;
-        parent.boundingBoxes[parent.boundingBoxes.length - 1].y1 = ((e.clientY - rect.top) / parent.scaleFactor) / parent.annotations[parent.index - 1].height;
-        parent.boundingBoxes[parent.boundingBoxes.length - 1].bildName = parent.name;
+        parent.boundingBoxes[parent.boundingBoxes.length - 1].x1 = ((e.clientX - rect.left) / parent.scaleFactor) / parent.annotationsToShow[parent.index - 1].width;
+        parent.boundingBoxes[parent.boundingBoxes.length - 1].y1 = ((e.clientY - rect.top) / parent.scaleFactor) / parent.annotationsToShow[parent.index - 1].height;
+        parent.boundingBoxes[parent.boundingBoxes.length - 1].bildName = parent.annotationsToShow[parent.index - 1].bildName;
         parent.boundingBoxes[parent.boundingBoxes.length - 1].essen = "test";
       });
 
@@ -742,8 +791,8 @@ export class CanvasForFoodComponent implements OnInit {
 
         let rect = parent.layer1CanvasElement.getBoundingClientRect();
 
-        parent.boundingBoxes[parent.boundingBoxes.length - 1].x2 = ((e.clientX - rect.left) / parent.scaleFactor) / parent.annotations[parent.index - 1].width;
-        parent.boundingBoxes[parent.boundingBoxes.length - 1].y2 = ((e.clientY - rect.top) / parent.scaleFactor) / parent.annotations[parent.index - 1].height;
+        parent.boundingBoxes[parent.boundingBoxes.length - 1].x2 = ((e.clientX - rect.left) / parent.scaleFactor) / parent.annotationsToShow[parent.index - 1].width;
+        parent.boundingBoxes[parent.boundingBoxes.length - 1].y2 = ((e.clientY - rect.top) / parent.scaleFactor) / parent.annotationsToShow[parent.index - 1].height;
         parent.drawRect(parent.boundingBoxes[parent.boundingBoxes.length - 1]);
       });
   
@@ -752,8 +801,8 @@ export class CanvasForFoodComponent implements OnInit {
 
         let rect = parent.layer1CanvasElement.getBoundingClientRect();
 
-        parent.boundingBoxes[parent.boundingBoxes.length - 1].x2 = ((e.clientX - rect.left) / parent.scaleFactor) / parent.annotations[parent.index - 1].width;
-        parent.boundingBoxes[parent.boundingBoxes.length - 1].y2 = ((e.clientY - rect.top) / parent.scaleFactor) / parent.annotations[parent.index - 1].height;
+        parent.boundingBoxes[parent.boundingBoxes.length - 1].x2 = ((e.clientX - rect.left) / parent.scaleFactor) / parent.annotationsToShow[parent.index - 1].width;
+        parent.boundingBoxes[parent.boundingBoxes.length - 1].y2 = ((e.clientY - rect.top) / parent.scaleFactor) / parent.annotationsToShow[parent.index - 1].height;
         parent.indexBild++;
 
         parent.redraw();
@@ -769,8 +818,8 @@ export class CanvasForFoodComponent implements OnInit {
 
   drawRect(b: any, color = "aqua") {
     this.context.beginPath();
-    this.context.rect(b.x1 * this.scaleFactor * this.annotations[this.index - 1].width, b.y1 * this.scaleFactor * this.annotations[this.index - 1].height,
-                     (b.x2 - b.x1) * this.scaleFactor * this.annotations[this.index - 1].width, (b.y2 - b.y1) * this.scaleFactor * this.annotations[this.index - 1].height);
+    this.context.rect(b.x1 * this.scaleFactor * this.annotationsToShow[this.index - 1].width, b.y1 * this.scaleFactor * this.annotationsToShow[this.index - 1].height,
+                     (b.x2 - b.x1) * this.scaleFactor * this.annotationsToShow[this.index - 1].width, (b.y2 - b.y1) * this.scaleFactor * this.annotationsToShow[this.index - 1].height);
     this.context.lineWidth = 2;
     this.context.strokeStyle = color;
     this.context.stroke();
@@ -787,7 +836,6 @@ export class CanvasForFoodComponent implements OnInit {
   openDialog(): void {
     const dialogRef = this.dialog.open(TagSelectionDialogComponent, {
       width: '500px',
-      height: '400px',
       data: { tag: '', tags: this.tags }
     });
 
