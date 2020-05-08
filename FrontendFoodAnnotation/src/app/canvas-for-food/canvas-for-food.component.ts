@@ -57,6 +57,7 @@ export class CanvasForFoodComponent implements OnInit {
   public annotations: Annotation[] = [];
   public tagList: Tag[] = [];
   public annotationsToShow: Annotation[] = [];
+  public tagsLessTen: string[] = [];
 
   public blob: Blob;
 
@@ -646,25 +647,34 @@ export class CanvasForFoodComponent implements OnInit {
     this.annotations.forEach(b => {
       b.boxes.forEach(bo => {
 
-        let box: CSVRecord;
-        box = new CSVRecord();
+        let box: CSVRecordMLKIT;
+        box = new CSVRecordMLKIT();
 
-        box.bildName = b.bildName;
+        box.purpose = "";
+        box.bildName = "gs://folderfoodown/" + b.bildName;
+
+        box.essen = bo.essen;
         box.x1 = bo.x1;
         box.y1 = bo.y1;
+        box.e1 = "";
+        box.e2 = "";
         box.x2 = bo.x2;
         box.y2 = bo.y2;
-        box.essen = bo.essen;
-        box.height = b.height;
-        box.width = b.width;
+        box.e3 = "";
+        box.e4 = "";
 
         this.newBoxes.push(box);
       });
     });
   }
 
+  getTagsForMLKIT () {
+    
+  }
+
   //Erstellen einer CSV-Datei, welche in ML KIT benutzt werden kann
   saveForMLkit() {
+
     if (this.boolForMLKIT) {
       this.getCSVforMLKITfromAnnotation();
     } else {
@@ -675,25 +685,43 @@ export class CanvasForFoodComponent implements OnInit {
   }
 
   getCSVforMLKITfromAnnotation(){
+
+    this.tagList.forEach(t => {
+      if (t.count < 10) {
+        this.tagsLessTen.push(t.tagName);
+        console.log(t.tagName);
+      }
+    });
+
+    let bool = true;
+
     this.csvMLkitBoxes = [];
       this.annotations.forEach(b => {
+        bool = true;
         b.boxes.forEach(bo => {
-          let box: CSVRecordMLKIT;
-          box = new CSVRecordMLKIT();
-  
-          box.purpose = "";
-          box.bildName = "gs://folderfoodown/" + b.bildName;
-  
-          box.essen = bo.essen;
-          box.x1 = bo.x1;
-          box.y1 = bo.y1;
-          box.e1 = "";
-          box.e2 = "";
-          box.x2 = bo.x2;
-          box.y2 = bo.y2;
-          box.e3 = "";
-          box.e4 = "";
-          this.csvMLkitBoxes.push(box);
+          this.tagsLessTen.forEach(t => {
+            if (t == bo.essen) {
+              bool = false;
+            }
+          });
+          if (bool) {
+            let box: CSVRecordMLKIT;
+            box = new CSVRecordMLKIT();
+    
+            box.purpose = "";
+            box.bildName = "gs://folderfoodown/" + b.bildName;
+    
+            box.essen = bo.essen;
+            box.x1 = bo.x1;
+            box.y1 = bo.y1;
+            box.e1 = "";
+            box.e2 = "";
+            box.x2 = bo.x2;
+            box.y2 = bo.y2;
+            box.e3 = "";
+            box.e4 = "";
+            this.csvMLkitBoxes.push(box);
+          }
         });
     });
   }

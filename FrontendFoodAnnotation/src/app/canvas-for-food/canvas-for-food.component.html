@@ -5,12 +5,12 @@
     <input [(ngModel)]=subfolder placeholder="Ordner"/>
     <button mat-flat-button color="accent" type="button" class="btn" (click)="loadImagesFromStorage()">Bilder laden</button>
     <!--<input [(ngModel)]=filePath placeholder="Path"/>-->
-    <button mat-flat-button color="primary" type="button" class="btn" (click)="nextImage()">Nächstes Bild ({{index}}/{{names.length}})</button>
-    <button mat-flat-button color="primary" type="button" class="btn" (click)="save()">Fertig (CSV herunterladen)</button>
+    <button mat-flat-button color="primary" type="button" class="btn" (click)="nextImage()">Nächstes Bild ({{index}}/{{annotationsToShow.length}})</button>
+    <button mat-flat-button color="primary" type="button" class="btn" (click)="save()">Speichern</button>
     <button mat-flat-button color="primary" type="button" class="btn" (click)="saveForMLkit()">Exportieren (für ML Kit)</button>
     <button mat-flat-button color="primary" type="button" class="btn" (click)="addBoxesToAnnotationsMLKIT()">Laden der CSV-Daten ML KIT</button>
     <button mat-flat-button color="primary" type="button" class="btn" (click)="addBoxesToAnnotations()">Laden der CSV-Daten</button>
-    <button mat-flat-button color="primary" type="button" class="btn" (click)="checkAndDelete()">Laden der Bildergröße</button>
+    <button mat-flat-button color="primary" type="button" class="btn" (click)="getTagsForMLKIT()">Laden der Bildergröße</button>
     <select [(ngModel)]="selectedTag" (change)="sortImages()">
       <option value="all">All</option>
       <option value="noTag">no Tag</option>
