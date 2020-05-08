@@ -638,7 +638,8 @@ export class CanvasForFoodComponent implements OnInit {
   //CSV-Datei in unserem Format erstellen und als "test.csv" speichern
   save() {
     this.getCSVfromAnnotation();
-    this.exportToCsv("test.csv", this.newBoxes);
+    const date = new Date().toJSON().slice(0, 19);
+    this.exportToCsv("annotations-" + date + ".csv", this.newBoxes);
   }
 
   //holt die Infos für die CSV-Datei aus der Annotationliste
@@ -680,8 +681,8 @@ export class CanvasForFoodComponent implements OnInit {
     } else {
       this.getCSVforMLKITfromAnnotationFromNormalCSV();
     }
-    
-    this.exportToCsv("mlKitCSV.csv", this.csvMLkitBoxes);
+    const date = new Date().toJSON().slice(0, 19);
+    this.exportToCsv("annotations_mlkit_" + date + ".csv", this.csvMLkitBoxes);
   }
 
   getCSVforMLKITfromAnnotation(){

@@ -1,16 +1,13 @@
-
-
 <div #div1>
-  <div class="row justify-content-md-center mb-4">
+  <div class="row justify-content-md-center mb-4 margintop-10">
     <input [(ngModel)]=subfolder placeholder="Ordner"/>
     <button mat-flat-button color="accent" type="button" class="btn" (click)="loadImagesFromStorage()">Bilder laden</button>
     <!--<input [(ngModel)]=filePath placeholder="Path"/>-->
     <button mat-flat-button color="primary" type="button" class="btn" (click)="nextImage()">Nächstes Bild ({{index}}/{{annotationsToShow.length}})</button>
-    <button mat-flat-button color="primary" type="button" class="btn" (click)="save()">Speichern</button>
+    <button mat-flat-button color="primary" type="button" class="btn" (click)="save()">Speichern als CSV-Datei</button>
     <button mat-flat-button color="primary" type="button" class="btn" (click)="saveForMLkit()">Exportieren (für ML Kit)</button>
-    <button mat-flat-button color="primary" type="button" class="btn" (click)="addBoxesToAnnotationsMLKIT()">Laden der CSV-Daten ML KIT</button>
-    <button mat-flat-button color="primary" type="button" class="btn" (click)="addBoxesToAnnotations()">Laden der CSV-Daten</button>
-    <button mat-flat-button color="primary" type="button" class="btn" (click)="getTagsForMLKIT()">Laden der Bildergröße</button>
+    <!--<button mat-flat-button color="primary" type="button" class="btn" (click)="addBoxesToAnnotations()">Laden der CSV-Daten</button>-->
+    <!--<button mat-flat-button color="primary" type="button" class="btn" (click)="getTagsForMLKIT()">Laden der Bildergröße</button>-->
     <select [(ngModel)]="selectedTag" (change)="sortImages()">
       <option value="all">All</option>
       <option value="noTag">no Tag</option>
@@ -63,13 +60,14 @@
     <label for="file">Bild-Upload ({{uploadedFiles}}/{{totalUploadFiles}} hochgeladen):</label>
   <input type="file" multiple (change)="upload($event)" accept=".png,.jpg"/>
   </div>
-  <div class="row justify-content-md-center mb-4">
+  <!--<div class="row justify-content-md-center mb-4">
     <label for="file">CSV-Datei hochladen (von lokalen Dateien)</label>
     <input type="file" #csvReader name="CSV hochladen" id="txtFileUpload" (change)="uploadListenerCSV($event)" accept=".csv" />
-  </div>
+  </div>-->
   <div class="row justify-content-md-center mb-4">
     <label for="file">CSV-Datei ML KIT hochladen (von lokalen Dateien)</label>
     <input type="file" #csvReader name="CSV hochladen" id="txtFileUpload" (change)="uploadCSVfromMLKIT($event)" accept=".csv" />
+    <button mat-flat-button color="accent" type="button" class="btn" (click)="addBoxesToAnnotationsMLKIT()">Laden der CSV-Daten (ML Kit-Format)</button>
   </div>
   
   <div class="row justify-content-md-center mb-4" style="display: none;">
