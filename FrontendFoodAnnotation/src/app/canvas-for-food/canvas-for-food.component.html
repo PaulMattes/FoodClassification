@@ -3,7 +3,9 @@
     <input [(ngModel)]=subfolder placeholder="Ordner"/>
     <button mat-flat-button color="accent" type="button" class="btn" (click)="loadImagesFromStorage()">Bilder laden</button>
     <!--<input [(ngModel)]=filePath placeholder="Path"/>-->
-    <button mat-flat-button color="primary" type="button" class="btn" (click)="nextImage()">Nächstes Bild ({{index}}/{{annotationsToShow.length}})</button>
+    <button mat-flat-button color="primary" type="button" class="btn" (click)="previousImage()">Vorheriges Bild</button>
+    <button mat-flat-button color="primary" type="button" class="btn" (click)="nextImage()">Nächstes Bild</button>
+    <p>({{index - 1}}/{{annotationsToShow.length}})</p>
     <button mat-flat-button color="primary" type="button" class="btn" (click)="save()">Speichern als CSV-Datei</button>
     <button mat-flat-button color="primary" type="button" class="btn" (click)="saveForMLkit()">Exportieren (für ML Kit)</button>
     <!--<button mat-flat-button color="primary" type="button" class="btn" (click)="addBoxesToAnnotations()">Laden der CSV-Daten</button>-->

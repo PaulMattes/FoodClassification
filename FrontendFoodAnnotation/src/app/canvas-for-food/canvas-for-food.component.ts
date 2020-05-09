@@ -76,6 +76,7 @@ export class CanvasForFoodComponent implements OnInit {
   public firstImage = true;
   public boolForMLKIT = true;
   public firstSave = true;
+  public booleanImageOrder = true;
 
   public contentHeight: number;
 
@@ -87,6 +88,7 @@ export class CanvasForFoodComponent implements OnInit {
   private isMouseDown: boolean;
 
   filePath = "";
+  public filePathPrevious = "";
   fileList = [];
 
   index = 0;
@@ -126,6 +128,9 @@ export class CanvasForFoodComponent implements OnInit {
     this.index = 0;
     this.names = [];
     this.fileList = [];
+    this.annotations = [];
+    this.annotationsToShow = [];
+    this.firstSave = true;
     this.afStorage.ref("/dataset/" + this.subfolder + "/images").listAll().subscribe(n => {
       n.items.forEach(async b => {
         this.names.push(b.name);
@@ -149,6 +154,12 @@ export class CanvasForFoodComponent implements OnInit {
   async download(name: string) {
     this.afStorage.ref("/dataset/" + this.subfolder + "/images/" + name).getDownloadURL().subscribe(d => {
       this.filePath = d;
+    });
+  }
+
+  async downloadPrevious(name: string) {
+    this.afStorage.ref("/dataset/" + this.subfolder + "/images/" + name).getDownloadURL().subscribe(d => {
+      this.filePathPrevious = d;
     });
   }
 
@@ -527,11 +538,15 @@ export class CanvasForFoodComponent implements OnInit {
   //Speichert Bounding Boxen in Annotation zurück
   saveBoundingBoxes() {
 
-    //this.annotationsToShow[this.index - 1].boxes = [];
     let counter = 0;
-    counter = this.getIndexFromAnnotation();
 
-    this.annotations[counter].boxes = [];
+    if (this.booleanImageOrder) {
+      counter = this.index - 1;
+    } else {
+      counter = this.index + 1;
+    }
+
+    this.annotationsToShow[counter].boxes = [];
 
     this.boundingBoxes.forEach(b => {
       let box: BoundingBox;
@@ -543,30 +558,18 @@ export class CanvasForFoodComponent implements OnInit {
       box.y2 = b.y2;
       box.essen = b.essen;
       
-      this.annotations[counter].boxes.push(box);
+      this.annotationsToShow[counter].boxes.push(box);
     });
 
-    this.addTagsForMLKIT(this.annotations[counter]);
-    this.annotations[counter].added = true;
-  }
-
-  getIndexFromAnnotation(){
-    let ind = 0;
-
-    for (var i = 0; i < this.annotations.length; i++){
-      if (this.annotations[i].bildName == this.annotationsToShow[this.index - 1].bildName) {
-        ind = i;
-      }
-    }
-
-    return ind;
+    this.addTagsForMLKIT(this.annotationsToShow[counter]);
+    this.annotationsToShow[counter].added = true;
   }
 
   //Wird aufgerufen, wenn der Button "nächstes Bild" gedürckt wird; Sichert die Bounding Boxen, wenn es nicht das erste Bild ist und schaut, ob es neue Bounding Boxen für das nächste Bild gibt
   nextImage() {
-
-    this.indexText = "" + this.index;
     
+    console.log("index: " + this.index);
+
     if (!(this.firstSave)){
       this.saveBoundingBoxes();
     }
@@ -589,7 +592,12 @@ export class CanvasForFoodComponent implements OnInit {
     });
 
     this.image = new Image();
-    this.image.src = this.filePath;
+    if (this.booleanImageOrder) {
+      this.image.src = this.filePath;
+    } else {
+      this.image.src = this.filePathPrevious;
+      this.booleanImageOrder = true;
+    }
 
     this.image.onload = () => {
       this.imgWidth = this.image.width;
@@ -613,15 +621,22 @@ export class CanvasForFoodComponent implements OnInit {
       }
     };
 
-    //this.autoSaveBoundingBoxes();
     this.index++;
 
     this.download(this.annotationsToShow[this.index].bildName);
+    this.downloadPrevious(this.annotationsToShow[this.index - 2].bildName);
+
+    //this.autoSaveBoundingBoxes();
   }
 
   //vorheriges Bild
   previousImage() {
+    this.booleanImageOrder = false;
     this.index = this.index - 2;
+    if (this.index <= 0) {
+      this.index = 0;
+      this.firstSave = true;
+    } 
     this.nextImage();
   }
 
