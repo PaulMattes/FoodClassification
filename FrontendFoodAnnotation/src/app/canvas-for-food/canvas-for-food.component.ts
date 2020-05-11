@@ -19,6 +19,9 @@ import { BoundingBox } from '../bounding-box';
 import { CsvService } from '../csv.service';
 import { Tag } from '../tag';
 import { Csvmlkit } from '../csvmlkit';
+import { FormControl } from '@angular/forms';
+
+import {startWith} from 'rxjs/operators';
 
 @Component({
   selector: 'app-canvas-for-food',
@@ -58,6 +61,7 @@ export class CanvasForFoodComponent implements OnInit {
   public tagList: Tag[] = [];
   public annotationsToShow: Annotation[] = [];
   public tagsLessTen: string[] = [];
+  public towns: string[] = [];
 
   public blob: Blob;
 
@@ -101,14 +105,30 @@ export class CanvasForFoodComponent implements OnInit {
 
   csvModel: CsvModelComponent;
 
+  myControl = new FormControl();
+  options: string[] = ['One', 'Two', 'Three'];
+  filteredOptions: Observable<string[]>;
+
   constructor(afStorage: AngularFireStorage, public dialog: MatDialog, private csvService: CsvService) {
     this.afStorage = afStorage;
+    this.towns = [ "New York", "Washington, D.C.", "London", "Berlin", "Sofia", "Rome", "Kiev",
+            "Copenhagen", "Paris", "Barcelona", "Vienna", "Athens", "Dublin", "Yerevan",
+            "Oslo", "Helsinki", "Stockholm", "Prague", "Istanbul", "El Paso", "Florence", "Moscow" ];
   }
 
   ngOnInit(): void {
-    this.initText = "voll";
     this.boundingBox = new CSVRecord();
-    //this.loadImagesFromStorage();
+    this.filteredOptions = this.myControl.valueChanges
+      .pipe(
+        startWith(''),
+        map(value => this._filter(value))
+      );
+  }
+
+  private _filter(value: string): string[] {
+    const filterValue = value.toLowerCase();
+
+    return this.options.filter(option => option.toLowerCase().includes(filterValue));
   }
 
   ngAfterViewInit() {
@@ -240,7 +260,7 @@ export class CanvasForFoodComponent implements OnInit {
       let curruntRecord = (<string>csvRecordsArray[i]).split(',');  
       if (curruntRecord.length == headerLength) {  
         let csvMLkit: Csvmlkit = new Csvmlkit();
-        csvMLkit.bildName = curruntRecord[1].trim().replace("gs://folderfoodown/", "");
+        csvMLkit.bildName = curruntRecord[1].trim().replace("gs://dataset_food_detection/images/", "");
         csvMLkit.essen = curruntRecord[2].trim();
         csvMLkit.x1 = parseFloat(curruntRecord[3].trim());  
         csvMLkit.y1 = parseFloat(curruntRecord[4].trim());  
@@ -416,25 +436,25 @@ export class CanvasForFoodComponent implements OnInit {
     let bool = false;
 
     for (let i = 0; i < this.annotations.length; i++) {
-      this.csvFromMLKIT.forEach(b => {
-        if (b.bildName == this.annotations[i].bildName) {
+      for (let j = 0; j < this.csvFromMLKIT.length; j++) {
+        if (this.csvFromMLKIT[j].bildName == this.annotations[i].bildName) {
           bool = true;
 
           let box: BoundingBox;
           box = new BoundingBox();
 
-          box.essen = b.essen;
-          box.x1 = b.x1;
-          box.y1 = b.y1;
-          box.x2 = b.x2;
-          box.y2 = b.y2;
+          box.essen = this.csvFromMLKIT[j].essen;
+          box.x1 = this.csvFromMLKIT[j].x1;
+          box.y1 = this.csvFromMLKIT[j].y1;
+          box.x2 = this.csvFromMLKIT[j].x2;
+          box.y2 = this.csvFromMLKIT[j].y2;
 
           //this.annotations[i].height = b.height;
           //this.annotations[i].width = b.width;
 
           this.annotations[i].boxes.push(box);
         }
-      });
+      }
       if (bool) {
         this.addTagsForMLKIT(this.annotations[i]);
         this.annotations[i].added = true;
@@ -442,7 +462,7 @@ export class CanvasForFoodComponent implements OnInit {
       }
     }
     this.tagList.forEach(t => {
-      console.log(t.tagName + " bild: " + t.bilder.length);
+      //console.log(t.tagName + " bild: " + t.bilder.length);
     });
   }
 
@@ -480,7 +500,7 @@ export class CanvasForFoodComponent implements OnInit {
       }
     }
     this.tagList.forEach(t => {
-      console.log(t.tagName + " bild: " + t.bilder.length);
+      console.log(t.tagName + " bild: " + t.count);
     });
   }
 
@@ -494,13 +514,11 @@ export class CanvasForFoodComponent implements OnInit {
     let tagObject: Tag;
 
     a.boxes.forEach(b => {
+      bo = false;
       this.tagList.forEach(t => {
         if (t.tagName == b.essen) {
           bo = true;
-          if (t.bilder.length <= tagCount) {
-            tagCount = t.bilder.length;
-            tag = b.essen;
-          }
+          t.count++;
         }
       });
       if (!bo) {
@@ -519,16 +537,6 @@ export class CanvasForFoodComponent implements OnInit {
         this.tags.push(b.essen);
       }
     });
-
-    if (!a.added) {
-      this.tagList.forEach(t => {
-        if (t.tagName == tag) {
-          console.log("added image to: " + t.tagName + " image: " + a.bildName);
-          t.bilder.push(a.bildName);
-          t.count++;
-        }
-      });
-    }
   }
 
   /*#########################################################################################################
@@ -667,7 +675,7 @@ export class CanvasForFoodComponent implements OnInit {
         box = new CSVRecordMLKIT();
 
         box.purpose = "";
-        box.bildName = "gs://folderfoodown/" + b.bildName;
+        box.bildName = "gs://dataset_food_detection/images/" + b.bildName;
 
         box.essen = bo.essen;
         box.x1 = bo.x1;
@@ -702,10 +710,13 @@ export class CanvasForFoodComponent implements OnInit {
 
   getCSVforMLKITfromAnnotation(){
 
+    let count = 0;
+
     this.tagList.forEach(t => {
       if (t.count < 10) {
         this.tagsLessTen.push(t.tagName);
-        console.log(t.tagName);
+        count++;
+        console.log(t.tagName + " count: " + t.count);
       }
     });
 
@@ -725,7 +736,7 @@ export class CanvasForFoodComponent implements OnInit {
             box = new CSVRecordMLKIT();
     
             box.purpose = "";
-            box.bildName = "gs://folderfoodown/" + b.bildName;
+            box.bildName = "gs://dataset_food_detection/images/" + b.bildName;
     
             box.essen = bo.essen;
             box.x1 = bo.x1;
@@ -751,7 +762,7 @@ export class CanvasForFoodComponent implements OnInit {
           box = new CSVRecordMLKIT();
   
           box.purpose = "";
-          box.bildName = "gs://folderfoodown/" + b.bildName;
+          box.bildName = "gs://dataset_food_detection/images/" + b.bildName;
   
           box.essen = bo.essen;
           box.x1 = (bo.x1 / b.width);
@@ -783,7 +794,7 @@ export class CanvasForFoodComponent implements OnInit {
       box = new CSVRecordMLKIT();
 
       box.purpose = "";
-      box.bildName = "gs://folderfoodown/" + c.bildName;
+      box.bildName = "gs://dataset_food_detection/images/" + c.bildName;
 
       box.essen = c.essen;
       box.x1 = c.x1;
