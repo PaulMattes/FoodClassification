@@ -534,7 +534,6 @@ export class CanvasForFoodComponent implements OnInit {
         tag = b.essen;
 
         this.tagList.push(tagObject);
-        this.tags.push(b.essen);
       }
     });
   }
@@ -908,7 +907,12 @@ export class CanvasForFoodComponent implements OnInit {
         return;
       }
     });
-    if (!contains) this.tags.push(tag);
+    if (!contains) {
+      this.tags.push(tag);
+      if (this.tags.length > 10) {
+        this.tags.splice(0,1);
+      }
+    }
   }
 
   exportToCsv(filename: string, rows: object[]) {
