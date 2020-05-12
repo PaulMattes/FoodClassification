@@ -1,0 +1,6 @@
+mat-option[type="button"] {
+    -webkit-appearance: none;
+}
+div.mat-dialog-content {
+    overflow: visible;
+}

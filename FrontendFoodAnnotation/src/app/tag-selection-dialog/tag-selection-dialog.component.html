@@ -1,12 +1,24 @@
 <h1 mat-dialog-title>Tag auswählen</h1>
 <div mat-dialog-content>
-  <mat-form-field>
+  <!--<mat-form-field>
     <mat-label>Tag</mat-label>
     <input matInput [(ngModel)]="data.tag">
+  </mat-form-field>-->
+  <mat-form-field class="example-full-width">
+    <input matInput type="text"
+           placeholder="Tag auswählen"
+           aria-label="Number"
+           [formControl]="myControl"
+           [matAutocomplete]="auto">
+    <mat-autocomplete #auto="matAutocomplete">
+      <mat-option *ngFor="let option of filteredOptions | async" [value]="option" [mat-dialog-close]="option">
+        {{option}}
+      </mat-option>
+    </mat-autocomplete>
   </mat-form-field>
 
     <mat-chip-list>
-        <mat-chip *ngFor="let tag of data.tags" [mat-dialog-close]="tag">{{tag}}</mat-chip>
+        <mat-chip *ngFor="let tag of data.lastTags" [mat-dialog-close]="tag">{{tag}}</mat-chip>
     </mat-chip-list>
 </div>
 <div mat-dialog-actions>

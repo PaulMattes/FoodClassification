@@ -57,6 +57,7 @@ export class CanvasForFoodComponent implements OnInit {
   public snaps: AngularFireUploadTask[] = [];
   public names: string[] = [];
   public tags: string[] = [];
+  public lastTags: string[] = [];
   public annotations: Annotation[] = [];
   public tagList: Tag[] = [];
   public annotationsToShow: Annotation[] = [];
@@ -453,6 +454,8 @@ export class CanvasForFoodComponent implements OnInit {
           //this.annotations[i].width = b.width;
 
           this.annotations[i].boxes.push(box);
+
+          this.addToTags(box.essen);
         }
       }
       if (bool) {
@@ -889,8 +892,9 @@ export class CanvasForFoodComponent implements OnInit {
 
   openDialog(): void {
     const dialogRef = this.dialog.open(TagSelectionDialogComponent, {
-      width: '500px',
-      data: { tag: '', tags: this.tags }
+      width: '550px',
+      height: '400px',
+      data: { tag: '', tags: this.tags, lastTags: this.lastTags }
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -900,17 +904,28 @@ export class CanvasForFoodComponent implements OnInit {
   }
 
   addToTags(tag: string) {
+    if (!tag || tag.length == 0) return;
+    // Add tag to list with all tags.
     let contains = false;
     this.tags.forEach(t => {
       if (t == tag) {
         contains = true;
-        return;
       }
     });
     if (!contains) {
       this.tags.push(tag);
-      if (this.tags.length > 10) {
-        this.tags.splice(0,1);
+    }
+    // Add tag to list with recently used tags.
+    contains = false;
+    this.lastTags.forEach(t => {
+      if (t == tag) {
+        contains = true;
+      }
+    });
+    if (!contains) {
+      this.lastTags.push(tag);
+      if (this.lastTags.length > 10) {
+        this.lastTags.splice(0,1);
       }
     }
   }

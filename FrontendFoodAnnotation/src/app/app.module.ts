@@ -18,6 +18,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { TagSelectionDialogComponent } from './tag-selection-dialog/tag-selection-dialog.component';
 import { MatButtonModule } from '@angular/material/button';
 import { MatChipsModule } from '@angular/material/chips';
+import { MatAutocompleteModule } from '@angular/material/autocomplete'; 
 
 import { HttpClientModule } from '@angular/common/http';
 
@@ -34,12 +35,14 @@ import { HttpClientModule } from '@angular/common/http';
     AngularFireStorageModule,
     AppRoutingModule,
     FormsModule,
+    ReactiveFormsModule,
     BrowserAnimationsModule,
     MatDialogModule,
     MatButtonModule,
     MatInputModule,
     MatFormFieldModule,
     MatChipsModule,
+    MatAutocompleteModule,
     HttpClientModule,
   ],
   providers: [],
