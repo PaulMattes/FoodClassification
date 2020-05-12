@@ -11,6 +11,8 @@ import {MatDialog, MatDialogRef, MAT_DIALOG_DATA} from '@angular/material/dialog
 import {HttpResponse, HttpClientModule} from '@angular/common/http';
 import {Http, ResponseContentType} from '@angular/http';
 
+import {MatChipsModule} from '@angular/material/chips';
+
 import { map, finalize, delay } from "rxjs/operators";
 import { Observable } from "rxjs";
 import { timingSafeEqual } from 'crypto';
@@ -62,7 +64,6 @@ export class CanvasForFoodComponent implements OnInit {
   public tagList: Tag[] = [];
   public annotationsToShow: Annotation[] = [];
   public tagsLessTen: string[] = [];
-  public towns: string[] = [];
 
   public blob: Blob;
 
@@ -107,23 +108,15 @@ export class CanvasForFoodComponent implements OnInit {
   csvModel: CsvModelComponent;
 
   myControl = new FormControl();
-  options: string[] = ['One', 'Two', 'Three'];
+  options: string[];
   filteredOptions: Observable<string[]>;
 
   constructor(afStorage: AngularFireStorage, public dialog: MatDialog, private csvService: CsvService) {
     this.afStorage = afStorage;
-    this.towns = [ "New York", "Washington, D.C.", "London", "Berlin", "Sofia", "Rome", "Kiev",
-            "Copenhagen", "Paris", "Barcelona", "Vienna", "Athens", "Dublin", "Yerevan",
-            "Oslo", "Helsinki", "Stockholm", "Prague", "Istanbul", "El Paso", "Florence", "Moscow" ];
   }
 
   ngOnInit(): void {
     this.boundingBox = new CSVRecord();
-    this.filteredOptions = this.myControl.valueChanges
-      .pipe(
-        startWith(''),
-        map(value => this._filter(value))
-      );
   }
 
   private _filter(value: string): string[] {
@@ -464,9 +457,19 @@ export class CanvasForFoodComponent implements OnInit {
         bool = false;
       }
     }
+    this.tagList.sort((a,b) => a.tagName.localeCompare(b.tagName));
+
     this.tagList.forEach(t => {
-      //console.log(t.tagName + " bild: " + t.bilder.length);
+      this.options.push(t.tagName);
     });
+
+    this.filteredOptions = this.myControl.valueChanges
+      .pipe(
+        startWith(''),
+        map(value => {
+          return this._filter(value);
+        })
+      );
   }
 
   //Methode welche die bestehenden Bounding Boxen aus einer CSV-Datei zu der Annoationliste hinzufügen
