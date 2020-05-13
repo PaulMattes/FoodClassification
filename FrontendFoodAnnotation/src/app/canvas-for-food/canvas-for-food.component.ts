@@ -13,7 +13,7 @@ import {Http, ResponseContentType} from '@angular/http';
 
 import {MatChipsModule} from '@angular/material/chips';
 
-import { map, finalize, delay } from "rxjs/operators";
+import { map, finalize, startWith, delay } from "rxjs/operators";
 import { Observable } from "rxjs";
 import { timingSafeEqual } from 'crypto';
 import { Annotation } from '../annotaton';
@@ -22,8 +22,6 @@ import { CsvService } from '../csv.service';
 import { Tag } from '../tag';
 import { Csvmlkit } from '../csvmlkit';
 import { FormControl } from '@angular/forms';
-
-import {startWith} from 'rxjs/operators';
 
 @Component({
   selector: 'app-canvas-for-food',
@@ -38,7 +36,7 @@ export class CanvasForFoodComponent implements OnInit {
   indexText = "index";
   initText = "leer";
 
-  selectedTag = "all";
+  selectedTag = "Alle";
 
   public subfolder = '0';
 
@@ -107,8 +105,8 @@ export class CanvasForFoodComponent implements OnInit {
 
   csvModel: CsvModelComponent;
 
-  myControl = new FormControl();
-  options: string[];
+  autoCompleteControl = new FormControl();
+  public autoCompleteOptions: string[] = [];
   filteredOptions: Observable<string[]>;
 
   constructor(afStorage: AngularFireStorage, public dialog: MatDialog, private csvService: CsvService) {
@@ -117,12 +115,23 @@ export class CanvasForFoodComponent implements OnInit {
 
   ngOnInit(): void {
     this.boundingBox = new CSVRecord();
+    
+    this.autoCompleteOptions = [];
+    this.autoCompleteOptions.push("Alle");
+    this.autoCompleteOptions.push("Ohne Tag");
+    this.filteredOptions = this.autoCompleteControl.valueChanges
+      .pipe(
+        startWith(''),
+        map(value => {
+          return this._filter(value);
+        })
+      );
   }
 
   private _filter(value: string): string[] {
     const filterValue = value.toLowerCase();
 
-    return this.options.filter(option => option.toLowerCase().includes(filterValue));
+    return this.autoCompleteOptions.filter(option => option.toLowerCase().includes(filterValue));
   }
 
   ngAfterViewInit() {
@@ -355,6 +364,11 @@ export class CanvasForFoodComponent implements OnInit {
   METHODEN ZUR VERARBEITUNG DER GELADENEN BILDER/DATEIEN
   #########################################################################################################*/
 
+  setSelectedTag(tag: string) {
+    this.selectedTag = tag;
+    this.sortImages();
+  }
+
   sortImages() {
 
     this.index = 0;
@@ -364,9 +378,9 @@ export class CanvasForFoodComponent implements OnInit {
 
     this.annotations.forEach(a => {
       tagTrue = false;
-      if (this.selectedTag == "all") {
+      if (this.selectedTag == "Alle") {
         this.annotationsToShow.push(a);
-      } else if (this.selectedTag == "noTag") {
+      } else if (this.selectedTag == "Ohne Tag") {
         if (a.boxes.length == 0){
           this.annotationsToShow.push(a);
         }
@@ -460,16 +474,9 @@ export class CanvasForFoodComponent implements OnInit {
     this.tagList.sort((a,b) => a.tagName.localeCompare(b.tagName));
 
     this.tagList.forEach(t => {
-      this.options.push(t.tagName);
+      this.autoCompleteOptions.push(t.tagName);
     });
 
-    this.filteredOptions = this.myControl.valueChanges
-      .pipe(
-        startWith(''),
-        map(value => {
-          return this._filter(value);
-        })
-      );
   }
 
   //Methode welche die bestehenden Bounding Boxen aus einer CSV-Datei zu der Annoationliste hinzufügen

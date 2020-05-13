@@ -10,25 +10,23 @@
     <button mat-flat-button color="primary" type="button" class="btn" (click)="saveForMLkit()">Exportieren (für ML Kit)</button>
     <!--<button mat-flat-button color="primary" type="button" class="btn" (click)="addBoxesToAnnotations()">Laden der CSV-Daten</button>-->
     <!--<button mat-flat-button color="primary" type="button" class="btn" (click)="getTagsForMLKIT()">Laden der Bildergröße</button>-->
-    <select [(ngModel)]="selectedTag" (change)="sortImages()">
+    <!--<select [(ngModel)]="selectedTag" (change)="sortImages()">
       <option value="all">All</option>
       <option value="noTag">no Tag</option>
       <option *ngFor="let tag of tagList" value="{{tag.tagName}}">{{tag.tagName}}</option>
-    </select>
-    <!--div mat-dialog-content>
-      <mat-form-field class="example-full-width">
-        <input matInput type="text"
-               placeholder="Tag auswählen"
-               aria-label="Number"
-               [formControl]="myControl"
-               [matAutocomplete]="auto">
-        <mat-autocomplete #auto="matAutocomplete">
-          <mat-option *ngFor="let option of filteredOptions | async" [value]="option" [mat-dialog-close]="option">
-            {{option}}
-          </mat-option>
-        </mat-autocomplete>
-      </mat-form-field>
-    </div-->
+    </select>-->
+    <div class="custom-wrapper-example" matAutocompleteOrigin #origin="matAutocompleteOrigin">
+      <input type="text"
+            placeholder="Bilder nach Tag filtern"
+            [formControl]="autoCompleteControl"
+            [matAutocomplete]="auto"
+            [matAutocompleteConnectedTo]="origin">
+    </div>
+      <mat-autocomplete #auto="matAutocomplete" (optionSelected)='setSelectedTag($event.option.value)'>
+        <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+          {{option}}
+        </mat-option>
+      </mat-autocomplete>
   </div>
 </div>
 
