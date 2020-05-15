@@ -81,6 +81,7 @@ export class CanvasForFoodComponent implements OnInit {
   public boolForMLKIT = true;
   public firstSave = true;
   public booleanImageOrder = true;
+  public booleanDelete = false;
 
   public contentHeight: number;
 
@@ -164,6 +165,7 @@ export class CanvasForFoodComponent implements OnInit {
         a.bildName = b.name;
         a.added = false;
         a.filePath = "";
+        a.deleted = false;
         a.boxes = [];
 
         this.annotations.push(a);
@@ -364,36 +366,47 @@ export class CanvasForFoodComponent implements OnInit {
   METHODEN ZUR VERARBEITUNG DER GELADENEN BILDER/DATEIEN
   #########################################################################################################*/
 
-  setSelectedTag(tag: string) {
-    this.selectedTag = tag;
-    this.sortImages();
+  deleteImage() {
+    this.annotationsToShow[this.index - 1].deleted = true;
+    this.afStorage.ref("/dataset/" + this.subfolder + "/images/" + this.annotationsToShow[this.index - 1].bildName).delete().toPromise();
+    this.sortImages(this.index - 1);
+    console.log("gelöscht");
   }
 
-  sortImages() {
+  setSelectedTag(tag: string) {
+    this.selectedTag = tag;
+    this.sortImages(0);
+  }
 
-    this.index = 0;
+  sortImages(ind: number) {
+
+    this.index = ind;
     this.annotationsToShow = [];
     let tagTrue = false;
     this.firstSave = true;
 
     this.annotations.forEach(a => {
-      tagTrue = false;
-      if (this.selectedTag == "Alle") {
-        this.annotationsToShow.push(a);
-      } else if (this.selectedTag == "Ohne Tag") {
-        if (a.boxes.length == 0){
-          this.annotationsToShow.push(a);
-        }
+      if (a.deleted) {
+
       } else {
-        a.boxes.forEach(b => {
-          if (b.essen == this.selectedTag) {
-            tagTrue = true;
-          }
-        });
-        if (tagTrue) {
+        tagTrue = false;
+        if (this.selectedTag == "Alle") {
           this.annotationsToShow.push(a);
+        } else if (this.selectedTag == "Ohne Tag") {
+          if (a.boxes.length == 0){
+            this.annotationsToShow.push(a);
+          }
+        } else {
+          a.boxes.forEach(b => {
+            if (b.essen == this.selectedTag) {
+              tagTrue = true;
+            }
+          });
+          if (tagTrue) {
+            this.annotationsToShow.push(a);
+          }
         }
-      }
+      }  
     });
 
     this.download(this.annotationsToShow[0].bildName);
@@ -596,20 +609,22 @@ export class CanvasForFoodComponent implements OnInit {
 
     this.boundingBoxes = [];
 
-    this.annotationsToShow[this.index].boxes.forEach(b => {
-      let box: CSVRecord;
-      box = new CSVRecord();
-
-      this.boundingBoxes.push(box);
-
-      this.boundingBoxes[this.boundingBoxes.length - 1].bildName = this.annotationsToShow[this.index].bildName;
-      this.boundingBoxes[this.boundingBoxes.length - 1].essen = b.essen;
-      this.boundingBoxes[this.boundingBoxes.length - 1].x1 = b.x1;
-      this.boundingBoxes[this.boundingBoxes.length - 1].y1 = b.y1;
-      this.boundingBoxes[this.boundingBoxes.length - 1].x2 = b.x2;
-      this.boundingBoxes[this.boundingBoxes.length - 1].y2 = b.y2;
-
-    });
+    if (!(this.annotationsToShow[this.index].deleted)){
+      this.annotationsToShow[this.index].boxes.forEach(b => {
+        let box: CSVRecord;
+        box = new CSVRecord();
+  
+        this.boundingBoxes.push(box);
+  
+        this.boundingBoxes[this.boundingBoxes.length - 1].bildName = this.annotationsToShow[this.index].bildName;
+        this.boundingBoxes[this.boundingBoxes.length - 1].essen = b.essen;
+        this.boundingBoxes[this.boundingBoxes.length - 1].x1 = b.x1;
+        this.boundingBoxes[this.boundingBoxes.length - 1].y1 = b.y1;
+        this.boundingBoxes[this.boundingBoxes.length - 1].x2 = b.x2;
+        this.boundingBoxes[this.boundingBoxes.length - 1].y2 = b.y2;
+  
+      });
+    }
 
     this.image = new Image();
     if (this.booleanImageOrder) {
@@ -644,7 +659,9 @@ export class CanvasForFoodComponent implements OnInit {
     this.index++;
 
     this.download(this.annotationsToShow[this.index].bildName);
-    this.downloadPrevious(this.annotationsToShow[this.index - 2].bildName);
+    if (this.index - 2 > -1) {
+      this.downloadPrevious(this.annotationsToShow[this.index - 2].bildName);
+    }  
 
     //this.autoSaveBoundingBoxes();
   }
@@ -670,6 +687,10 @@ export class CanvasForFoodComponent implements OnInit {
   SICHERN DER CSV DATEN
   #########################################################################################################*/
   
+  async deleteImageDuringSaving(b: string) {
+    this.afStorage.ref("/dataset/" + this.subfolder + "/images/" + b).delete().toPromise();
+  }
+
   //CSV-Datei in unserem Format erstellen und als "test.csv" speichern
   save() {
     this.getCSVfromAnnotation();
@@ -681,26 +702,30 @@ export class CanvasForFoodComponent implements OnInit {
   getCSVfromAnnotation(){
     this.newBoxes = [];
     this.annotations.forEach(b => {
-      b.boxes.forEach(bo => {
+      if (b.deleted) {
+        //this.deleteImageDuringSaving(b.bildName);
+      } else {
+        b.boxes.forEach(bo => {
 
-        let box: CSVRecordMLKIT;
-        box = new CSVRecordMLKIT();
-
-        box.purpose = "";
-        box.bildName = "gs://dataset_food_detection/images/" + b.bildName;
-
-        box.essen = bo.essen;
-        box.x1 = bo.x1;
-        box.y1 = bo.y1;
-        box.e1 = "";
-        box.e2 = "";
-        box.x2 = bo.x2;
-        box.y2 = bo.y2;
-        box.e3 = "";
-        box.e4 = "";
-
-        this.newBoxes.push(box);
-      });
+          let box: CSVRecordMLKIT;
+          box = new CSVRecordMLKIT();
+  
+          box.purpose = "";
+          box.bildName = "gs://dataset_food_detection/images/" + b.bildName;
+  
+          box.essen = bo.essen;
+          box.x1 = bo.x1;
+          box.y1 = bo.y1;
+          box.e1 = "";
+          box.e2 = "";
+          box.x2 = bo.x2;
+          box.y2 = bo.y2;
+          box.e3 = "";
+          box.e4 = "";
+  
+          this.newBoxes.push(box);
+        });
+      }
     });
   }
 
@@ -735,7 +760,10 @@ export class CanvasForFoodComponent implements OnInit {
     let bool = true;
 
     this.csvMLkitBoxes = [];
-      this.annotations.forEach(b => {
+    this.annotations.forEach(b => {
+      if (b.deleted) {
+        //this.deleteImageDuringSaving(b.bildName);
+      } else {
         bool = true;
         b.boxes.forEach(bo => {
           this.tagsLessTen.forEach(t => {
@@ -762,6 +790,7 @@ export class CanvasForFoodComponent implements OnInit {
             this.csvMLkitBoxes.push(box);
           }
         });
+      }
     });
   }
 

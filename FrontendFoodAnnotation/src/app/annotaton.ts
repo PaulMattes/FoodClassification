@@ -7,4 +7,5 @@ export class Annotation {
     bildName: string;
     boxes: BoundingBox[];
     filePath: string;
+    deleted: boolean;
 }
