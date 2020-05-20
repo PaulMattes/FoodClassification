@@ -6,6 +6,9 @@ canvas {
 input.number {
     width: 50px;
 }
+input.wide {
+    width: 400px;
+}
 .margintop-10 {
     margin-top: 10px;
 }

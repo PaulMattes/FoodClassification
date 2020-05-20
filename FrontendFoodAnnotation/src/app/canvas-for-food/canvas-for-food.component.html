@@ -1,14 +1,14 @@
 <div #div1>
   <div class="row justify-content-md-center mb-4 margintop-10">
-    <input [(ngModel)]=subfolder placeholder="Ordner"/>
+    <input class="number" [(ngModel)]=subfolder placeholder="Ordner"/>
     <button mat-flat-button color="accent" type="button" class="btn" (click)="loadImagesFromStorage()">Bilder laden</button>
     <!--<input [(ngModel)]=filePath placeholder="Path"/>-->
     <button mat-flat-button color="primary" type="button" class="btn" (click)="previousImage()">Vorheriges Bild</button>
     <button mat-flat-button color="primary" type="button" class="btn" (click)="nextImage()">Nächstes Bild</button>
     <p>({{index - 1}}/{{annotationsToShow.length - 1}})</p>
-    <button mat-flat-button color="primary" type="button" class="btn" (click)="save()">Speichern als CSV-Datei</button>
-    <button mat-flat-button color="primary" type="button" class="btn" (click)="saveForMLkit()">Exportieren (für ML Kit)</button>
-    <button mat-flat-button color="primary" type="button" class="btn" (click)="deleteImage()">Löschen</button>
+    <button mat-flat-button color="accent" type="button" class="btn" (click)="save()">Speichern</button>
+    <button mat-flat-button color="accent" type="button" class="btn" (click)="saveForMLkit()">Exportieren</button>
+    <button mat-flat-button color="warn" type="button" class="btn" (click)="deleteImage()">Löschen</button>
     <!--<button mat-flat-button color="primary" type="button" class="btn" (click)="addBoxesToAnnotations()">Laden der CSV-Daten</button>-->
     <!--<button mat-flat-button color="primary" type="button" class="btn" (click)="getTagsForMLKIT()">Laden der Bildergröße</button>-->
     <!--<select [(ngModel)]="selectedTag" (change)="sortImages()">
@@ -17,17 +17,17 @@
       <option *ngFor="let tag of tagList" value="{{tag.tagName}}">{{tag.tagName}}</option>
     </select>-->
     <div class="custom-wrapper-example" matAutocompleteOrigin #origin="matAutocompleteOrigin">
-      <input type="text"
+      <input type="text" class="wide"
             placeholder="Bilder nach Tag filtern"
             [formControl]="autoCompleteControl"
             [matAutocomplete]="auto"
             [matAutocompleteConnectedTo]="origin">
     </div>
-      <mat-autocomplete #auto="matAutocomplete" (optionSelected)='setSelectedTag($event.option.value)'>
-        <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
-          {{option}}
-        </mat-option>
-      </mat-autocomplete>
+    <mat-autocomplete #auto="matAutocomplete" (optionSelected)='setSelectedTag($event.option.value)'>
+      <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+        {{option}}
+      </mat-option>
+    </mat-autocomplete>
   </div>
 </div>
 

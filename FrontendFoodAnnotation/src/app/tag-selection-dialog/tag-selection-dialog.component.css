@@ -4,3 +4,6 @@ mat-option[type="button"] {
 div.mat-dialog-content {
     overflow: visible;
 }
+input, mat-form-field {
+    width: 450px !important;
+}
