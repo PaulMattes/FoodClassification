@@ -271,7 +271,14 @@ export class CanvasForFoodComponent implements OnInit {
         csvMLkit.y1 = parseFloat(curruntRecord[4].trim());  
         csvMLkit.x2 = parseFloat(curruntRecord[7].trim());  
         csvMLkit.y2 = parseFloat(curruntRecord[8].trim());
-        csvArr.push(csvMLkit);  
+        let contained = false;
+        for (let j = 0; j < csvArr.length; j++) {
+          if (csvArr[j].bildName == csvMLkit.bildName && csvArr[j].essen == csvMLkit.essen && csvArr[j].x1 == csvMLkit.x1 && csvArr[j].y1 == csvMLkit.y1 && csvArr[j].x2 == csvMLkit.x2 && csvArr[j].y2 == csvMLkit.y2) {
+            contained = true;
+            break;
+          }
+        }
+        if (!contained) csvArr.push(csvMLkit);  
       }  
     }  
     console.log("Länge: " + csvArr.length);
