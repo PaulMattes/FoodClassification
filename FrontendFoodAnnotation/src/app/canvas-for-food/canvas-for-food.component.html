@@ -1,3 +1,4 @@
+<div #page>
 <div #div1>
   <div class="row justify-content-md-center mb-4 margintop-10">
     <input class="number" [(ngModel)]=subfolder placeholder="Ordner"/>
@@ -5,7 +6,7 @@
     <!--<input [(ngModel)]=filePath placeholder="Path"/>-->
     <button mat-flat-button color="primary" type="button" class="btn" (click)="previousImage()">Vorheriges Bild</button>
     <button mat-flat-button color="primary" type="button" class="btn" (click)="nextImage()">Nächstes Bild</button>
-    <p>({{index - 1}}/{{annotationsToShow.length - 1}})</p>
+    <p>({{index}}/{{annotationsToShow.length}})</p>
     <button mat-flat-button color="accent" type="button" class="btn" (click)="save()">Speichern</button>
     <button mat-flat-button color="accent" type="button" class="btn" (click)="saveForMLkit()">Exportieren</button>
     <button mat-flat-button color="warn" type="button" class="btn" (click)="deleteImage()">Löschen</button>
@@ -32,8 +33,7 @@
 </div>
 
 <div style="position: relative; text-align: center;">    
-  <canvas #layer1 id="layer1" 
-   style="position: relative;"></canvas>
+  <canvas #canvas style="position: relative;"></canvas>
 </div>
 
 <div class="container text-left">
@@ -90,4 +90,5 @@
     <p>{{indexText}}</p>
     <p>{{initText}}</p>
   </div>
+</div>
 </div>

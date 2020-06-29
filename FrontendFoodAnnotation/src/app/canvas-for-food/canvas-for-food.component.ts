@@ -87,9 +87,11 @@ export class CanvasForFoodComponent implements OnInit {
 
   @ViewChild("div1", { static: false}) div1: ElementRef;
 
-  @ViewChild("layer1", { static: false }) layer1Canvas: ElementRef;
+  @ViewChild("canvas", { static: false }) canvasElement: ElementRef;
+  @ViewChild("page", { static: false }) pageElement: ElementRef;
   private context: CanvasRenderingContext2D;
-  private layer1CanvasElement: any;
+  private canvas: any;
+  private page: any;
   private isMouseDown: boolean;
 
   filePath = "";
@@ -864,22 +866,23 @@ export class CanvasForFoodComponent implements OnInit {
   //###################################################################################
 
   showImage() {
-    this.layer1CanvasElement = this.layer1Canvas.nativeElement;
-    this.context = this.layer1CanvasElement.getContext("2d");
-    this.layer1CanvasElement.width = this.displayImgWidth;
-    this.layer1CanvasElement.height = this.displayImgHeight;
+    this.canvas = this.canvasElement.nativeElement;
+    this.page = this.pageElement.nativeElement;
+    this.context = this.canvas.getContext("2d");
+    this.canvas.width = this.displayImgWidth;
+    this.canvas.height = this.displayImgHeight;
     this.context.drawImage(this.image, 0, 0, this.displayImgWidth, this.displayImgHeight);
 
     let parent = this;
 
     if (this.firstImage) {
-      this.layer1CanvasElement.addEventListener("mousedown", function(e) {
+      this.canvas.addEventListener("mousedown", function(e) {
         parent.isMouseDown = true;
         let b: CSVRecord;
         b = new CSVRecord();
         parent.boundingBoxes.push(b);
 
-        let rect = parent.layer1CanvasElement.getBoundingClientRect();
+        let rect = parent.canvas.getBoundingClientRect();
 
         parent.boundingBoxes[parent.boundingBoxes.length - 1].x1 = ((e.clientX - rect.left) / parent.scaleFactor) / parent.annotationsToShow[parent.index - 1].width;
         parent.boundingBoxes[parent.boundingBoxes.length - 1].y1 = ((e.clientY - rect.top) / parent.scaleFactor) / parent.annotationsToShow[parent.index - 1].height;
@@ -887,30 +890,39 @@ export class CanvasForFoodComponent implements OnInit {
         parent.boundingBoxes[parent.boundingBoxes.length - 1].essen = "test";
       });
 
-      this.layer1CanvasElement.addEventListener("mousemove", function(e) {
-        if (!parent.isMouseDown) return;
-        parent.context.clearRect(0, 0, parent.context.canvas.width, parent.context.canvas.height);
-        parent.context.drawImage(parent.image, 0, 0, parent.displayImgWidth, parent.displayImgHeight);
-
-        let rect = parent.layer1CanvasElement.getBoundingClientRect();
-
-        parent.boundingBoxes[parent.boundingBoxes.length - 1].x2 = ((e.clientX - rect.left) / parent.scaleFactor) / parent.annotationsToShow[parent.index - 1].width;
-        parent.boundingBoxes[parent.boundingBoxes.length - 1].y2 = ((e.clientY - rect.top) / parent.scaleFactor) / parent.annotationsToShow[parent.index - 1].height;
-        parent.drawRect(parent.boundingBoxes[parent.boundingBoxes.length - 1]);
+      this.canvas.addEventListener("mousemove", function(e) {
+        parent.clearCanvas();
+        // Display guiding lines for easier drawing.
+        let rect = parent.canvas.getBoundingClientRect();
+        parent.drawGuidingLines((e.clientX - rect.left), (e.clientY - rect.top));
+        if (parent.isMouseDown) {
+          // Display BoundingBox that is currently drawn.
+          parent.context.clearRect(0, 0, parent.context.canvas.width, parent.context.canvas.height);
+          parent.context.drawImage(parent.image, 0, 0, parent.displayImgWidth, parent.displayImgHeight);
+          let rect = parent.canvas.getBoundingClientRect();
+          parent.boundingBoxes[parent.boundingBoxes.length - 1].x2 = ((e.clientX - rect.left) / parent.scaleFactor) / parent.annotationsToShow[parent.index - 1].width;
+          parent.boundingBoxes[parent.boundingBoxes.length - 1].y2 = ((e.clientY - rect.top) / parent.scaleFactor) / parent.annotationsToShow[parent.index - 1].height;
+          parent.drawRect(parent.boundingBoxes[parent.boundingBoxes.length - 1]);
+        } else {
+          parent.drawBoundingBoxes();
+        }
       });
   
-      this.layer1CanvasElement.addEventListener("mouseup", function(e) {
-        parent.isMouseDown = false;
-
-        let rect = parent.layer1CanvasElement.getBoundingClientRect();
-
-        parent.boundingBoxes[parent.boundingBoxes.length - 1].x2 = ((e.clientX - rect.left) / parent.scaleFactor) / parent.annotationsToShow[parent.index - 1].width;
-        parent.boundingBoxes[parent.boundingBoxes.length - 1].y2 = ((e.clientY - rect.top) / parent.scaleFactor) / parent.annotationsToShow[parent.index - 1].height;
-        parent.indexBild++;
-
-        parent.redraw();
-
-        parent.openDialog();
+      this.page.addEventListener("mouseup", function(e) {
+        if (parent.isMouseDown) {
+          parent.clearCanvas();
+          parent.isMouseDown = false;
+  
+          let rect = parent.canvas.getBoundingClientRect();
+  
+          //parent.boundingBoxes[parent.boundingBoxes.length - 1].x2 = ((e.clientX - rect.left) / parent.scaleFactor) / parent.annotationsToShow[parent.index - 1].width;
+          //parent.boundingBoxes[parent.boundingBoxes.length - 1].y2 = ((e.clientY - rect.top) / parent.scaleFactor) / parent.annotationsToShow[parent.index - 1].height;
+          parent.indexBild++;
+  
+          parent.drawBoundingBoxes();
+  
+          parent.openDialog();
+        }
       });
     }
     
@@ -928,9 +940,23 @@ export class CanvasForFoodComponent implements OnInit {
     this.context.stroke();
   }
 
-  redraw() {
+  drawGuidingLines(x: number, y: number, color = "white") {
+    this.context.beginPath();
+    this.context.moveTo(x, 0);
+    this.context.lineTo(x, this.context.canvas.height);
+    this.context.moveTo(0, y);
+    this.context.lineTo(this.context.canvas.width, y);
+    this.context.lineWidth = 1;
+    this.context.strokeStyle = color;
+    this.context.stroke();
+  }
+
+  clearCanvas() {
     this.context.clearRect(0, 0, this.context.canvas.width, this.context.canvas.height);
     this.context.drawImage(this.image, 0, 0, this.displayImgWidth, this.displayImgHeight);
+  }
+
+  drawBoundingBoxes() {
     this.boundingBoxes.forEach(b => {
       this.drawRect(b);
     });
@@ -944,8 +970,14 @@ export class CanvasForFoodComponent implements OnInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      this.boundingBoxes[this.boundingBoxes.length - 1].essen = result;
-      this.addToTags(result);
+      if (result != null && result.length > 0) {
+        this.boundingBoxes[this.boundingBoxes.length - 1].essen = result;
+        this.addToTags(result);
+      } else {
+        this.boundingBoxes.pop();
+      }
+      this.clearCanvas();
+      this.drawBoundingBoxes();
     });
   }
 
@@ -1064,7 +1096,8 @@ export class CanvasForFoodComponent implements OnInit {
       i++;
     });
 
-    this.redraw();
+    this.clearCanvas();
+    this.drawBoundingBoxes();
   }
 
 }
